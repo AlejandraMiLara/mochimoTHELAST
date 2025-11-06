@@ -1,0 +1,216 @@
+// This is your Prisma schema file,
+// located at prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String?
+  lastName  String?
+
+  role      Role     @default(FREELANCER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile     Profile?
+  paymentData PaymentData? 
+
+  projectsOwned Project[] @relation("OwnedProjects")
+  
+  projectsJoined ProjectClient[] @relation("JoinedProjects")
+
+  status      ProjectStatus @default(PENDING)
+  
+
+}
+
+model Profile {
+  id        String   @id @default(cuid())
+  bio       String? // sobre mi
+  avatarUrl String? // foto de perfil
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique 
+}
+
+model PaymentData {
+  id            String @id @default(cuid())
+  bankName      String // nombre del Banco
+  accountHolder String // nombre del Titular
+  accountNumber String // CLABE 
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+}
+
+enum PaymentMode {
+  UPFRONT    // Pago por adelantado
+  HALFHUP    // 50/50 (Mitad y mitad)
+  ONFINISH   // Pago al finalizar
+}
+
+enum Role {
+  FREELANCER
+  CLIENT
+}
+
+enum ProjectStatus {
+  PENDING    //pendiente de config
+  REVIEW     //requerimientos en revision
+  APPROVED   //requerimientos aprobados
+  
+  INPROGRESS //en progreso
+  PAYMENT    //esperando pago
+  COMPLETED  //completado
+
+  CONTRACT_REVIEW  //contrato en revision
+  CONTRACT_APPROVED //contrato aprobado
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  imageUrl    String? //foto opcional del proyecto
+  
+  paymentMode PaymentMode
+  
+  status      ProjectStatus @default(PENDING)
+
+  invitationCode String @unique @default(cuid())
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner   User   @relation("OwnedProjects", fields: [ownerId], references: [id])
+  ownerId String 
+
+  isPublic Boolean @default(true)
+
+  clients ProjectClient[]
+  requirements Requirement[]
+  contracts Contract[]
+  paymentProofs PaymentProof[]
+  tasks Task[]
+}
+
+model ProjectClient {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId String
+
+  client    User    @relation("JoinedProjects", fields: [clientId], references: [id])
+  clientId  String
+
+  @@unique([projectId, clientId])
+}
+
+enum RequirementStatus {
+  PENDING    //creado por el freelancer
+  SUBMITTED  //enviado a revision
+  APPROVED   //aprobado por el cliente
+  REVISION   //cliente solicito revision
+}
+
+model Requirement {
+  id          String   @id @default(cuid())
+  description String
+  status      RequirementStatus @default(PENDING)
+  
+  revisionReason String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+  task Task?
+  
+}
+
+
+enum ContractStatus {
+  DRAFT      // solo visible para el freelancer
+  SUBMITTED  // enviado al cliente
+  APPROVED   // aprobado por el cliente
+  REVISION   // cliente solicito revision
+}
+
+model Contract {
+  id        String   @id @default(cuid())
+  
+  // Contenido
+  content   String   @db.Text
+  
+  price         Float    // Precio total acordado
+  includesIva   Boolean  @default(false)
+  
+  status        ContractStatus @default(DRAFT)
+  
+  revisionReason String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+}
+
+enum PaymentProofStatus {
+  PENDING    //subido por cliente
+  APPROVED   //aprobado por freelancer
+  REVISION   //rechazado por freelancer
+}
+
+model PaymentProof {
+  id        String   @id @default(cuid())
+  
+  imageUrl  String
+  
+  status    PaymentProofStatus @default(PENDING)
+  
+  revisionReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  
+}
+
+enum TaskStatus {
+  TODO       // sin comenzar
+  INPROGRESS // en curso
+  DONE       // finalizado
+}
+
+model Task {
+  id        String     @id @default(cuid())
+  
+  // (TODO, INPROGRESS, DONE)
+  status    TaskStatus @default(TODO)
+  
+  imageUrl  String?
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  requirement   Requirement @relation(fields: [requirementId], references: [id])
+  requirementId String      @unique
+}
