@@ -24,9 +24,10 @@ export class ProfileController {
   constructor(private profileService: ProfileService) {}
 
   @Get('me')
-  async getMyProfile(@GetUser() user: JwtPayload) {
-    // user.userId viene del payload del jwt
-    return this.profileService.getProfile(user.userId);
+  getMyProfile(
+    @GetUser() user: JwtPayload,
+  ): JwtPayload {
+    return user;
   }
 
   @Put('me')
