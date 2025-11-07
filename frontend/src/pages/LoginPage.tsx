@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { UserRole } from '../types'; // Importamos el OBJETO
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
