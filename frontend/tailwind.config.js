@@ -5,5 +5,5 @@ export default {
       // aqui pueden haber colores
     },
   },
-  plugins: [],
-}
+  plugins: [require("daisyui")],
+};

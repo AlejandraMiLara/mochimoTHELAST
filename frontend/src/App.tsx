@@ -1,10 +1,13 @@
 // src/App.tsx
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import DashboardPage from './pages/DashboardPage'; // Página de prueba
-import ProtectedRoute from './components/ProtectedRoute'; // Componente clave
-import { useAuth } from './hooks/useAuth';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import DashboardPage from "./pages/DashboardPage"; // Página de prueba
+import ProtectedRoute from "./components/ProtectedRoute"; // Componente clave
+import { useAuth } from "./hooks/useAuth";
+import Home from "./pages/Home/Home";
+import Projects from "./pages/project/Projects";
+import Tasks from "./pages/tasks/Tasks";
 
 function App() {
   const { isLoading } = useAuth();
@@ -20,6 +23,7 @@ function App() {
         {/* --- Rutas Públicas --- */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/" element={<Home />} />
 
         {/* --- Rutas Privadas --- */}
         <Route
@@ -30,7 +34,24 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+
+        <Route
+          path="/projects"
+          element={
+            <ProtectedRoute>
+              <Projects />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tasks"
+          element={
+            <ProtectedRoute>
+              <Tasks />
+            </ProtectedRoute>
+          }
+        ></Route>
         {/* Ruta principal (ej: redirige a dashboard o login) */}
         <Route path="/" element={<h1>Homepage</h1>} />
       </Routes>
