@@ -174,8 +174,7 @@ export default function Home() {
           <nav>
             <h6 className="footer-title">Legal</h6>
             <a className="link link-hover">Terminos de uso</a>
-            <a className="link link-hover">Privacy policy</a>
-            <a className="link link-hover">Cookie policy</a>
+            <a className="link link-hover">Política de privacidad</a>
           </nav>
         </footer>
       </div>
