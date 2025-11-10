@@ -158,22 +158,22 @@ export default function Home() {
         {/* Footer */}
         <footer className="footer sm:footer-horizontal bg-base-200/50 backdrop-blur-sm text-neutral-content p-10 mt-20">
           <nav>
-            <h6 className="footer-title">Services</h6>
-            <a className="link link-hover">Branding</a>
-            <a className="link link-hover">Design</a>
-            <a className="link link-hover">Marketing</a>
-            <a className="link link-hover">Advertisement</a>
+            <h6 className="footer-title">Servicios Freelancer</h6>
+            <a className="link link-hover">Proyectos</a>
+            <a className="link link-hover">Tareas</a>
+            <a className="link link-hover">Contratos</a>
+            <a className="link link-hover">Portafolio</a>
           </nav>
           <nav>
-            <h6 className="footer-title">Company</h6>
-            <a className="link link-hover">About us</a>
-            <a className="link link-hover">Contact</a>
-            <a className="link link-hover">Jobs</a>
-            <a className="link link-hover">Press kit</a>
+            <h6 className="footer-title">Servicion Cliente</h6>
+            <a className="link link-hover">Proyecto Compartido</a>
+            <a className="link link-hover">Requerimientos</a>
+            <a className="link link-hover">Pagos</a>
+            <a className="link link-hover">Contratos</a>
           </nav>
           <nav>
             <h6 className="footer-title">Legal</h6>
-            <a className="link link-hover">Terms of use</a>
+            <a className="link link-hover">Terminos de uso</a>
             <a className="link link-hover">Privacy policy</a>
             <a className="link link-hover">Cookie policy</a>
           </nav>

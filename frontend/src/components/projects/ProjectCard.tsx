@@ -2,6 +2,7 @@
 "use client";
 
 import type { Project } from "../../pages/project/project.types";
+import { Link } from "react-router-dom";
 
 interface ProjectCardProps extends Project {
   onEdit?: (project: Project) => void;
@@ -138,7 +139,7 @@ export default function ProjectCard({
                     isPublic: false,
                   })
                 }
-                className="btn btn-ghost btn-sm"
+                className="btn btn-primary text-white btn-sm"
               >
                 Editar
               </button>
@@ -151,6 +152,13 @@ export default function ProjectCard({
                 Eliminar
               </button>
             )}
+
+            <Link
+              to="/requirements"
+              className="btn btn-primary btn-sm text-white"
+            >
+              Requisitos
+            </Link>
           </div>
         )}
       </div>

@@ -8,6 +8,7 @@ import { useAuth } from "./hooks/useAuth";
 import Home from "./pages/Home/Home";
 import Projects from "./pages/project/Projects";
 import Tasks from "./pages/tasks/Tasks";
+import Requirements from "./pages/requirements/Requirements";
 
 function App() {
   const { isLoading } = useAuth();
@@ -49,6 +50,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Tasks />
+            </ProtectedRoute>
+          }
+        ></Route>
+
+        <Route
+          path="/requirements"
+          element={
+            <ProtectedRoute>
+              <Requirements />
             </ProtectedRoute>
           }
         ></Route>
