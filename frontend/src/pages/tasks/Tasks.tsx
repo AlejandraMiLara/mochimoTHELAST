@@ -1,15 +1,46 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import TaskCard from "../../components/tasks/TaskCard";
 import TaskFormModal from "../../components/tasks/TaskFormModal";
 import type { Task, TaskFormData } from "./task.types";
 import { TASK_STATUS_CONFIG } from "./task.constants";
 import DashboardLayout from "../../layouts/DashBoardLayout";
-import { useTasks } from "../../hooks/useTasks";
+import { useProjects } from "../../hooks/projects/useProjects";
 
 export default function Tasks() {
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
-  const { tasks, loading, error, loadTasks, updateTaskStatus, uploadTaskImage } = useTasks();
+  // TODO: Obtener userId del contexto de autenticación real
+  const userId = localStorage.getItem("userId") || "user123";
+
+  // Cargar proyectos reales del backend usando el hook
+  const {
+    projects,
+    loading: projectsLoading,
+    error: projectsError,
+    refetch: refetchProjects,
+  } = useProjects(userId);
+
+  // TODO: Implementar endpoint de requirements en el backend
+  // Por ahora usamos datos de ejemplo
+  const [requirements] = useState([
+    {
+      id: "req-1",
+      description: "Implementar autenticación de usuarios",
+      projectId: "cmhu4fxmt0002baqodzmdu28j", // Usar IDs reales del backend
+    },
+    {
+      id: "req-2",
+      description: "Diseñar página de productos",
+      projectId: "cmhu4fxmt0002baqodzmdu28j",
+    },
+    {
+      id: "req-3",
+      description: "Crear sistema de notificaciones",
+      projectId: "cmhu4fxmt0002baqodzmdu28j",
+    },
+  ]);
+
+  // TODO: Conectar con el backend de tareas (GET /tasks)
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -22,42 +53,63 @@ export default function Tasks() {
 
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
 
-  useEffect(() => {
-    if (selectedProjectId) {
-      loadTasks(selectedProjectId);
-    }
-  }, [selectedProjectId]);
-
-  const handleStatusChange = async (id: string, status: Task["status"]) => {
-    try {
-      await updateTaskStatus(id, status);
-    } catch (error) {
-      console.error('Error updating task status:', error);
-    }
-  };
-
-  const handleImageUpload = async (taskId: string, file: File) => {
-    try {
-      await uploadTaskImage(taskId, file);
-    } catch (error) {
-      console.error('Error uploading image:', error);
-    }
-  };
-
+  // Crear nueva tarea
   const handleCreate = () => {
-    console.log('Create task:', formData);
+    const selectedProject = projects.find((p) => p.id === formData.projectId);
+    const selectedRequirement = requirements.find(
+      (r) => r.id === formData.requirementId
+    );
+
+    const newTask: Task = {
+      id: `task-${Date.now()}`,
+      ...formData,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      project: selectedProject
+        ? { id: selectedProject.id, name: selectedProject.name }
+        : undefined,
+      requirement: selectedRequirement,
+    };
+
+    // TODO: Hacer POST al backend /tasks
+    console.log("Creating task:", newTask);
+    setTasks([...tasks, newTask]);
     resetForm();
   };
 
   const handleUpdate = (id: string) => {
-    console.log('Update task:', id, formData);
+    setTasks(
+      tasks.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              status: formData.status,
+              imageUrl: formData.imageUrl,
+              updatedAt: new Date().toISOString(),
+            }
+          : task
+      )
+    );
+    // TODO: Hacer PATCH al backend /tasks/:id
     resetForm();
   };
 
   const handleDelete = (id: string) => {
     if (confirm("¿Estás seguro de que quieres eliminar esta tarea?")) {
-      console.log('Delete task:', id);
+      setTasks(tasks.filter((task) => task.id !== id));
+      // TODO: Hacer DELETE al backend /tasks/:id
     }
+  };
+
+  const handleStatusChange = (id: string, status: Task["status"]) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === id
+          ? { ...task, status, updatedAt: new Date().toISOString() }
+          : task
+      )
+    );
+    // TODO: Hacer PATCH al backend /tasks/:id con el nuevo status
   };
 
   const openEditModal = (task: Task) => {
@@ -98,41 +150,62 @@ export default function Tasks() {
     DONE: tasks.filter((t) => t.status === "DONE").length,
   };
 
+  // Convertir proyectos del backend al formato que espera el componente
+  const projectsForDropdown = projects.map((p) => ({
+    id: p.id,
+    name: p.name,
+  }));
+
   return (
     <DashboardLayout>
       <div>
+        {/* Header específico de la página de tareas */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900">
               Gestión de Tareas
             </h1>
-          </div>
-
-          <div className="bg-base-200 rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-lg font-semibold mb-4 text-white">
-              Seleccionar Proyecto
-            </h2>
-            <input
-              type="text"
-              placeholder="Ingresa el ID del proyecto"
-              value={selectedProjectId}
-              onChange={(e) => setSelectedProjectId(e.target.value)}
-              className="input input-bordered w-full max-w-md"
-            />
-            <p className="text-sm text-gray-400 mt-2">
-              Las tareas se generan automáticamente desde requerimientos aprobados
-            </p>
-          </div>
-
-          {error && (
-            <div className="alert alert-error mb-6">
-              <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <button
+              onClick={() => {
+                resetForm();
+                setShowModal(true);
+              }}
+              className="bg-cyan-400 text-white px-6 py-3 rounded-lg hover:bg-cyan-500 transition font-medium shadow-md flex items-center gap-2"
+              disabled={projectsLoading}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 5v14M5 12h14" />
               </svg>
-              <span>{error}</span>
+              Nueva Tarea
+            </button>
+          </div>
+
+          {/* Mensaje de error si falla la carga de proyectos */}
+          {projectsError && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 flex items-center justify-between">
+              <div>
+                <strong>Error:</strong> {projectsError}
+              </div>
+              <button
+                onClick={() => refetchProjects()}
+                className="btn btn-sm btn-outline"
+              >
+                Reintentar
+              </button>
             </div>
           )}
 
+          {/* Filtros y estadísticas */}
           <div className="bg-base-200 rounded-lg shadow-md p-6 mb-6">
             <h2 className="text-lg font-semibold mb-4 text-white">
               Filtrar por estado
@@ -165,46 +238,40 @@ export default function Tasks() {
           </div>
         </div>
 
-        {loading && (
-          <div className="flex justify-center items-center py-12">
-            <span className="loading loading-spinner loading-lg"></span>
-            <span className="ml-2 text-white">Cargando tareas desde backend...</span>
-          </div>
-        )}
+        {/* Lista de tareas */}
+        <ul className="list bg-base-200 rounded-box shadow-md">
+          {/* Header de la lista */}
+          <li className="p-4 pb-2 text-xs opacity-60 tracking-wide uppercase text-white">
+            {filterStatus === "ALL"
+              ? `Todas las tareas (${filteredTasks.length})`
+              : `${
+                  TASK_STATUS_CONFIG[
+                    filterStatus as keyof typeof TASK_STATUS_CONFIG
+                  ]?.label
+                } (${filteredTasks.length})`}
+          </li>
 
-        {!loading && selectedProjectId && (
-          <ul className="list bg-base-200 rounded-box shadow-md">
-            <li className="p-4 pb-2 text-xs opacity-60 tracking-wide uppercase text-white">
-              {filterStatus === "ALL"
-                ? `Todas las tareas (${filteredTasks.length})`
-                : `${
-                    TASK_STATUS_CONFIG[
-                      filterStatus as keyof typeof TASK_STATUS_CONFIG
-                    ]?.label
-                  } (${filteredTasks.length})`}
-            </li>
+          {/* Tareas */}
+          {filteredTasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              {...task}
+              onEdit={openEditModal}
+              onDelete={handleDelete}
+              onStatusChange={handleStatusChange}
+            />
+          ))}
+        </ul>
 
-            {filteredTasks.map((task) => (
-              <TaskCard
-                key={task.id}
-                {...task}
-                onEdit={openEditModal}
-                onDelete={handleDelete}
-                onStatusChange={handleStatusChange}
-                onImageUpload={handleImageUpload}
-              />
-            ))}
-          </ul>
-        )}
-
-        {!loading && selectedProjectId && filteredTasks.length === 0 && (
-          <div className="bg-white border-2 border-dashed border-slate-300 rounded-lg p-12 text-center">
+        {/* Mensaje si no hay tareas */}
+        {filteredTasks.length === 0 && (
+          <div className="bg-base-200 border-2  border-dashed border-slate-300 rounded-lg p-12 text-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="mx-auto h-16 w-16 text-slate-400 mb-4"
               fill="none"
               viewBox="0 0 24 24"
-              stroke="currentColor"
+              stroke="white"
             >
               <path
                 strokeLinecap="round"
@@ -213,9 +280,9 @@ export default function Tasks() {
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
               />
             </svg>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+            <h3 className="text-xl font-semibold text-white mb-2">
               {filterStatus === "ALL"
-                ? "No hay tareas en este proyecto"
+                ? "No tienes tareas aún"
                 : `No hay tareas con estado "${
                     TASK_STATUS_CONFIG[
                       filterStatus as keyof typeof TASK_STATUS_CONFIG
@@ -224,51 +291,35 @@ export default function Tasks() {
             </h3>
             <p className="text-slate-600 mb-4">
               {filterStatus === "ALL"
-                ? "Las tareas se generan automáticamente cuando los requerimientos son aprobados"
-                : "Prueba con otro filtro"}
+                ? "Crea tu primera tarea para comenzar"
+                : "Prueba con otro filtro o crea una nueva tarea"}
             </p>
-          </div>
-        )}
-
-        {!selectedProjectId && !loading && (
-          <div className="bg-white border-2 border-dashed border-slate-300 rounded-lg p-12 text-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="mx-auto h-16 w-16 text-slate-400 mb-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+            <button
+              onClick={() => {
+                resetForm();
+                setShowModal(true);
+              }}
+              className="btn btn-primary bg-cyan-400 hover:bg-cyan-500 border-cyan-400 text-white"
+              disabled={projectsLoading}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-              />
-            </svg>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">
-              Selecciona un proyecto
-            </h3>
-            <p className="text-slate-600">
-              Ingresa el ID de un proyecto para ver sus tareas
-            </p>
+              Crear Tarea
+            </button>
           </div>
         )}
 
-        {showModal && (
-          <TaskFormModal
-            isOpen={showModal}
-            isEditing={!!editingId}
-            formData={formData}
-            projects={[]}
-            requirements={[]}
-            onClose={resetForm}
-            onSubmit={() =>
-              editingId ? handleUpdate(editingId) : handleCreate()
-            }
-            onChange={handleFormChange}
-          />
-        )}
+        {/* Modal de formulario */}
+        <TaskFormModal
+          isOpen={showModal}
+          isEditing={!!editingId}
+          formData={formData}
+          projects={projectsForDropdown}
+          requirements={requirements}
+          onClose={resetForm}
+          onSubmit={() =>
+            editingId ? handleUpdate(editingId) : handleCreate()
+          }
+          onChange={handleFormChange}
+        />
       </div>
     </DashboardLayout>
   );

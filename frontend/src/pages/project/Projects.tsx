@@ -154,13 +154,13 @@ export default function Projects() {
 
         {/* Mensaje si no hay proyectos */}
         {filteredProjects.length === 0 && (
-          <div className="bg-blue-50 border-2 border-dashed border-blue-300 rounded-lg p-12 text-center">
+          <div className="bg-base-200 border-2 border-dashed border-black rounded-lg p-12 text-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="mx-auto h-16 w-16 text-blue-400 mb-4"
               fill="none"
               viewBox="0 0 24 24"
-              stroke="currentColor"
+              stroke="white"
             >
               <path
                 strokeLinecap="round"
@@ -169,7 +169,7 @@ export default function Projects() {
                 d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
               />
             </svg>
-            <h3 className="text-xl font-semibold text-blue-900 mb-2">
+            <h3 className="text-xl font-semibold text-white mb-2">
               {isFreelancer
                 ? "No tienes proyectos aún"
                 : "No tienes proyectos asignados"}

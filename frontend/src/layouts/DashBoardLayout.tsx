@@ -23,7 +23,6 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navbar */}
       <nav className="bg-base-100 border-b border-base-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -51,7 +50,6 @@ export default function DashboardLayout({
       </nav>
 
       <div className="flex">
-        {/* Sidebar */}
         <aside className="w-64 bg-base-100 border-r border-gray-200 min-h-screen">
           <nav className="p-4 space-y-2">
             <Link

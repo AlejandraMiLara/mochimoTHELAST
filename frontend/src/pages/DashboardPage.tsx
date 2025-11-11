@@ -33,22 +33,7 @@ export default function DashboardPage() {
           Acciones Rápidas
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {isFreelancer && (
-            <>
-              <button
-                onClick={() => navigate("/projects/create")}
-                className="bg-blue-900 text-white px-6 py-3 rounded-lg hover:bg-blue-800 font-medium transition"
-              >
-                Crear Nuevo Proyecto
-              </button>
-              <button
-                onClick={() => navigate("/profile")}
-                className="border-2 border-blue-900 text-blue-900 px-6 py-3 rounded-lg hover:bg-blue-50 font-medium transition"
-              >
-                Actualizar Perfil
-              </button>
-            </>
-          )}
+          {isFreelancer && <></>}
           {isClient && (
             <>
               <button
