@@ -8,10 +8,15 @@ const api = axios.create({
   withCredentials: true, 
 });
 
-// Interceptor para logs de requests
 api.interceptors.request.use(
   (config) => {
     console.log('Request:', config.method?.toUpperCase(), config.url);
+    
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
     return config;
   },
   (error) => {
@@ -20,7 +25,6 @@ api.interceptors.request.use(
   }
 );
 
-// Interceptor para logs de responses
 api.interceptors.response.use(
   (response) => {
     console.log('Response:', response.status, response.data);

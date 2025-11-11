@@ -1,14 +1,9 @@
-// src/hooks/useRequirements.ts
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../useAuth";
+import { requirementService, type RequirementResponse, type ProjectResponse } from "../../services/requirement.service";
 
-type RequirementStatus = "PENDING" | "SUBMITTED" | "APPROVED" | "REVISION";
-type ProjectStatus =
-  | "PENDING"
-  | "REVIEW"
-  | "APPROVED"
-  | "INPROGRESS"
-  | "COMPLETED";
+export type RequirementStatus = "PENDING" | "SUBMITTED" | "APPROVED" | "REVISION";
+export type ProjectStatus = "PENDING" | "REVIEW" | "APPROVED" | "INPROGRESS" | "COMPLETED";
 
 export interface Requirement {
   id: string;
@@ -28,130 +23,117 @@ export interface Project {
 
 export function useRequirements(projectId: string) {
   const { user } = useAuth();
-
-  // TODO: Obtener del backend con GET /projects/:id
-  const [project, setProject] = useState<Project>({
-    id: projectId,
-    name: "E-commerce Platform",
-    status: "PENDING",
-  });
-
-  // TODO: Obtener del backend con GET /projects/:id/requirements
-  const [requirements, setRequirements] = useState<Requirement[]>([
-    {
-      id: "1",
-      description: "Autenticación de usuarios con JWT",
-      status: "PENDING",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      projectId,
-    },
-    {
-      id: "2",
-      description: "Sistema de pagos con Stripe",
-      status: "PENDING",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      projectId,
-    },
-  ]);
+  const [project, setProject] = useState<Project | null>(null);
+  const [requirements, setRequirements] = useState<Requirement[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const isFreelancer = user ? String(user.role) === "FREELANCER" : false;
   const isClient = user ? String(user.role) === "CLIENT" : false;
 
-  const canEditRequirements = isFreelancer && project.status === "PENDING";
-  const canSubmitForReview =
-    isFreelancer && project.status === "PENDING" && requirements.length > 0;
-  const canReview = isClient && project.status === "REVIEW";
+  const canEditRequirements = isFreelancer && project?.status === "PENDING";
+  const canSubmitForReview = isFreelancer && project?.status === "PENDING" && requirements.length > 0;
+  const canReview = isClient && project?.status === "REVIEW";
 
-  // TODO: POST /requirements
-  const createRequirement = (description: string) => {
-    if (!canEditRequirements) return;
-
-    const newRequirement: Requirement = {
-      id: `temp-${Date.now()}`,
-      description,
-      status: "PENDING",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      projectId,
-    };
-
-    setRequirements([...requirements, newRequirement]);
+  const loadProject = async () => {
+    try {
+      const projectData = await requirementService.getProject(projectId);
+      setProject(projectData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al cargar proyecto');
+    }
   };
 
-  // TODO: PUT /requirements/:id
-  const updateRequirement = (id: string, description: string) => {
-    if (!canEditRequirements) return;
-
-    setRequirements(
-      requirements.map((r) =>
-        r.id === id
-          ? {
-              ...r,
-              description,
-              updatedAt: new Date().toISOString(),
-            }
-          : r
-      )
-    );
+  const loadRequirements = async () => {
+    try {
+      const requirementsData = await requirementService.getRequirements(projectId);
+      setRequirements(requirementsData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al cargar requisitos');
+    }
   };
 
-  // TODO: DELETE /requirements/:id
-  const deleteRequirement = (id: string) => {
-    if (!canEditRequirements) return;
-    setRequirements(requirements.filter((r) => r.id !== id));
+  const loadData = async () => {
+    if (!projectId) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await Promise.all([loadProject(), loadRequirements()]);
+    } catch (err) {
+      console.error('Error loading data:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // TODO: POST /projects/:id/requirements/submit
-  const submitForReview = () => {
+  useEffect(() => {
+    loadData();
+  }, [projectId]);
+
+  const createRequirement = async (description: string) => {
+    if (!canEditRequirements) return;
+
+    try {
+      const newRequirement = await requirementService.createRequirement(projectId, description);
+      setRequirements([...requirements, newRequirement]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al crear requisito');
+    }
+  };
+
+  const updateRequirement = async (id: string, description: string) => {
+    if (!canEditRequirements) return;
+
+    try {
+      const updatedRequirement = await requirementService.updateRequirement(id, description);
+      setRequirements(requirements.map(r => r.id === id ? updatedRequirement : r));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al actualizar requisito');
+    }
+  };
+
+  const deleteRequirement = async (id: string) => {
+    if (!canEditRequirements) return;
+
+    try {
+      await requirementService.deleteRequirement(id);
+      setRequirements(requirements.filter(r => r.id !== id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al eliminar requisito');
+    }
+  };
+
+  const submitForReview = async () => {
     if (!canSubmitForReview) return;
 
-    setRequirements(
-      requirements.map((r) => ({
-        ...r,
-        status: "SUBMITTED" as RequirementStatus,
-        updatedAt: new Date().toISOString(),
-      }))
-    );
-    setProject({ ...project, status: "REVIEW" });
-    alert("Requisitos enviados a revisión exitosamente");
+    try {
+      const updatedProject = await requirementService.submitForReview(projectId);
+      setProject(updatedProject);
+      await loadRequirements();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al enviar a revisión');
+    }
   };
 
-  // TODO: POST /projects/:id/requirements/review
-  const reviewRequirements = (
-    action: "APPROVE" | "REVISION",
-    reason?: string
-  ) => {
+  const reviewRequirements = async (action: "APPROVE" | "REVISION", reason?: string) => {
     if (!canReview) return;
 
-    if (action === "APPROVE") {
-      setRequirements(
-        requirements.map((r) => ({
-          ...r,
-          status: "APPROVED" as RequirementStatus,
-          updatedAt: new Date().toISOString(),
-        }))
-      );
-      setProject({ ...project, status: "APPROVED" });
-      alert("Requisitos aprobados exitosamente");
-    } else {
-      setRequirements(
-        requirements.map((r) => ({
-          ...r,
-          status: "REVISION" as RequirementStatus,
-          revisionReason: reason,
-          updatedAt: new Date().toISOString(),
-        }))
-      );
-      setProject({ ...project, status: "PENDING" });
-      alert("Requisitos enviados a revisión");
+    try {
+      const updatedProject = await requirementService.reviewRequirements(projectId, action, reason);
+      setProject(updatedProject);
+      await loadRequirements();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al revisar requisitos');
     }
   };
 
   return {
     project,
     requirements,
+    loading,
+    error,
     isFreelancer,
     isClient,
     canEditRequirements,
@@ -162,5 +144,6 @@ export function useRequirements(projectId: string) {
     deleteRequirement,
     submitForReview,
     reviewRequirements,
+    loadData,
   };
 }

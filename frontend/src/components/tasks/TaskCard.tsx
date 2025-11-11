@@ -1,4 +1,3 @@
-// src/components/TaskCard.tsx
 "use client";
 import type { Task } from "../../pages/tasks/task.types";
 import { TASK_STATUS_CONFIG } from "../../pages/tasks/task.constants";
@@ -7,6 +6,7 @@ interface TaskCardProps extends Task {
   onEdit?: (task: Task) => void;
   onDelete?: (id: string) => void;
   onStatusChange?: (id: string, status: Task["status"]) => void;
+  onImageUpload?: (taskId: string, file: File) => void;
 }
 
 export default function TaskCard({
@@ -19,19 +19,18 @@ export default function TaskCard({
   onEdit,
   onDelete,
   onStatusChange,
+  onImageUpload,
 }: TaskCardProps) {
   const statusConfig = TASK_STATUS_CONFIG[status];
 
   return (
     <li className="list-row hover:bg-base-200 transition-colors">
-      {/* Estado Badge */}
       <div className="flex items-center justify-center">
         <span className={`badge ${statusConfig.color} badge-lg font-semibold`}>
           {statusConfig.label}
         </span>
       </div>
 
-      {/* Imagen (si existe) */}
       {imageUrl ? (
         <div>
           <img
@@ -59,13 +58,11 @@ export default function TaskCard({
         </div>
       )}
 
-      {/* Contenido principal */}
       <div className="list-col-grow">
         <div className="font-semibold text-white">
           {requirement?.description || "Sin descripcion"}
         </div>
         <div className="flex items-center gap-3 mt-1">
-          {/* Proyecto */}
           {project && (
             <div className="flex items-center gap-1">
               <svg
@@ -87,7 +84,6 @@ export default function TaskCard({
               </span>
             </div>
           )}
-          {/* Fecha */}
           <span className="text-xs text-slate-500">
             {new Date(createdAt).toLocaleDateString("es-ES", {
               day: "2-digit",
@@ -98,10 +94,9 @@ export default function TaskCard({
         </div>
       </div>
 
-      {/* Cambio de estado */}
       {onStatusChange && (
         <div className="dropdown dropdown-end">
-          <label tabIndex={0} className="btn btn-sm btn-ghost">
+          <label tabIndex={0} className="btn btn-sm btn-ghost" title="Cambiar estado">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -138,7 +133,6 @@ export default function TaskCard({
         </div>
       )}
 
-      {/* Boton Editar */}
       {onEdit && (
         <button
           onClick={() =>
@@ -174,7 +168,37 @@ export default function TaskCard({
         </button>
       )}
 
-      {/* Boton Eliminar */}
+      {onImageUpload && (
+        <label className="btn btn-square btn-ghost btn-sm" title="Subir evidencia de progreso">
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onImageUpload(id, file);
+              }
+            }}
+          />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17,8 12,3 7,8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+        </label>
+      )}
+
       {onDelete && (
         <button
           onClick={() => onDelete(id)}

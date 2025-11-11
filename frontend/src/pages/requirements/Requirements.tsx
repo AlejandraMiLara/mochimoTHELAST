@@ -18,6 +18,8 @@ export default function Requirements() {
   const {
     project,
     requirements,
+    loading,
+    error,
     isFreelancer,
     isClient,
     canEditRequirements,
@@ -86,27 +88,45 @@ export default function Requirements() {
   return (
     <DashboardLayout>
       <div>
-        <RequirementsHeader
-          project={project}
-          isFreelancer={isFreelancer}
-          isClient={isClient}
-          canEditRequirements={canEditRequirements}
-          canSubmitForReview={canSubmitForReview}
-          canReview={canReview}
-          onCreateClick={openCreateModal}
-          onSubmitClick={handleSubmitForReview}
-          onReviewClick={() => setShowReviewModal(true)}
-        />
+        {error && (
+          <div className="alert alert-error mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{error}</span>
+          </div>
+        )}
 
-        <RequirementsTable
-          requirements={requirements}
-          isFreelancer={isFreelancer}
-          canEditRequirements={canEditRequirements}
-          onEdit={openEditModal}
-          onDelete={handleDelete}
-        />
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <span className="loading loading-spinner loading-lg"></span>
+            <span className="ml-2 text-white">Cargando requisitos...</span>
+          </div>
+        ) : (
+          <>
+            <RequirementsHeader
+              project={project}
+              isFreelancer={isFreelancer}
+              isClient={isClient}
+              canEditRequirements={canEditRequirements}
+              canSubmitForReview={canSubmitForReview}
+              canReview={canReview}
+              onCreateClick={openCreateModal}
+              onSubmitClick={handleSubmitForReview}
+              onReviewClick={() => setShowReviewModal(true)}
+            />
 
-        <RequirementsStats requirements={requirements} project={project} />
+            <RequirementsTable
+              requirements={requirements}
+              isFreelancer={isFreelancer}
+              canEditRequirements={canEditRequirements}
+              onEdit={openEditModal}
+              onDelete={handleDelete}
+            />
+
+            <RequirementsStats requirements={requirements} project={project} />
+          </>
+        )}
       </div>
 
       {showModal && isFreelancer && (
