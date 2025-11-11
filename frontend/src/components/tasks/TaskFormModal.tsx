@@ -9,6 +9,7 @@ interface TaskFormModalProps {
   formData: TaskFormData;
   projects: Array<{ id: string; name: string }>;
   requirements: Array<{ id: string; description: string; projectId: string }>;
+  requirementsLoading?: boolean;
   onClose: () => void;
   onSubmit: () => void;
   onChange: (data: Partial<TaskFormData>) => void;
@@ -20,19 +21,22 @@ export default function TaskFormModal({
   formData,
   projects,
   requirements,
+  requirementsLoading = false,
   onClose,
   onSubmit,
   onChange,
 }: TaskFormModalProps) {
   if (!isOpen) return null;
 
-  // Filtrar requerimientos segun el proyecto seleccionado
+  // Filtrar requerimientos según el proyecto seleccionado
   const filteredRequirements = formData.projectId
     ? requirements.filter((req) => req.projectId === formData.projectId)
-    : requirements;
+    : [];
+
+  const hasRequirements = filteredRequirements.length > 0;
 
   return (
-    <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-base-200 rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <h3 className="text-2xl font-bold text-white mb-6">
           {isEditing ? "Editar Tarea" : "Nueva Tarea"}
@@ -70,7 +74,7 @@ export default function TaskFormModal({
               ))}
             </select>
             {isEditing && (
-              <p className="text-xs text-white mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 No se puede cambiar el proyecto de una tarea existente
               </p>
             )}
@@ -82,13 +86,17 @@ export default function TaskFormModal({
               Requerimiento *
             </label>
             <select
-              className="select select-bordered w-full px-4 py-3 border border-white rounded-lg bg-gray-900/50 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="select select-bordered w-full px-4 py-3 border border-white rounded-lg bg-gray-900/50 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent disabled:opacity-50"
               value={formData.requirementId}
               onChange={(e) => onChange({ requirementId: e.target.value })}
-              disabled={!formData.projectId || isEditing}
+              disabled={!formData.projectId || isEditing || requirementsLoading}
             >
               <option className="bg-base-200" value="">
-                Selecciona un requerimiento
+                {requirementsLoading
+                  ? "Cargando requerimientos..."
+                  : hasRequirements
+                  ? "Selecciona un requerimiento"
+                  : "No hay requerimientos disponibles"}
               </option>
               {filteredRequirements.map((req) => (
                 <option className="bg-base-200" key={req.id} value={req.id}>
@@ -97,12 +105,17 @@ export default function TaskFormModal({
               ))}
             </select>
             {!formData.projectId && (
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 Primero selecciona un proyecto
               </p>
             )}
+            {formData.projectId && !requirementsLoading && !hasRequirements && (
+              <p className="text-xs text-yellow-400 mt-1">
+                Este proyecto no tiene requerimientos. Crea uno primero.
+              </p>
+            )}
             {isEditing && (
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 No se puede cambiar el requerimiento de una tarea existente
               </p>
             )}
@@ -140,7 +153,7 @@ export default function TaskFormModal({
             <input
               type="url"
               placeholder="https://ejemplo.com/imagen.jpg"
-              className="input input-bordered w-full text-gray-100"
+              className="input input-bordered w-full text-gray-100 bg-gray-900/50"
               value={formData.imageUrl || ""}
               onChange={(e) => onChange({ imageUrl: e.target.value })}
             />
@@ -169,8 +182,12 @@ export default function TaskFormModal({
           </button>
           <button
             onClick={onSubmit}
-            disabled={!formData.projectId || !formData.requirementId}
-            className="flex-1 btn btn-primary"
+            disabled={
+              !formData.projectId ||
+              !formData.requirementId ||
+              requirementsLoading
+            }
+            className="flex-1 btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isEditing ? "Guardar Cambios" : "Crear Tarea"}
           </button>

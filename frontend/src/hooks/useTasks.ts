@@ -1,97 +1,70 @@
-import { useState, useEffect } from 'react';
-import { taskService, type TaskResponse } from '../services/task.service';
-import type { Task, TaskStatus } from '../pages/tasks/task.types';
+import { useState, useEffect } from "react";
+import { taskService, type TaskResponse } from "../services/task.service";
+import type { TaskStatus } from "../pages/tasks/task.types";
 
-export const useTasks = (projectId?: string) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+export function useTasks(projectId: string | null) {
+  const [tasks, setTasks] = useState<TaskResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const transformTask = (taskResponse: TaskResponse): Task => ({
-    id: taskResponse.id,
-    status: taskResponse.status,
-    imageUrl: taskResponse.imageUrl,
-    createdAt: taskResponse.createdAt,
-    updatedAt: taskResponse.updatedAt,
-    projectId: taskResponse.projectId,
-    requirementId: taskResponse.requirementId,
-    requirement: {
-      id: taskResponse.requirementId,
-      description: taskResponse.requirement.description,
-    },
-  });
+  const fetchTasks = async () => {
+    if (!projectId) {
+      setTasks([]);
+      return;
+    }
 
-  const loadTasks = async (projectId: string) => {
-    if (!projectId) return;
-    
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await taskService.getTasksByProject(projectId);
-      const transformedTasks = response.map(transformTask);
-      setTasks(transformedTasks);
+      const data = await taskService.getTasksByProject(projectId);
+      setTasks(data);
     } catch (err: any) {
-      if (err.response?.status === 404) {
-        setTasks([]);
-      } else {
-        setError(err instanceof Error ? err.message : 'Error al cargar las tareas');
-        console.error('Error loading tasks:', err);
-      }
+      const errorMsg =
+        err.response?.data?.message || "Error al cargar las tareas";
+      setError(errorMsg);
+      console.error("Error fetching tasks:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchTasks();
+  }, [projectId]);
+
   const updateTaskStatus = async (taskId: string, status: TaskStatus) => {
     try {
       const updatedTask = await taskService.updateTaskStatus(taskId, status);
-      const transformedTask = transformTask(updatedTask);
-      
-      setTasks(prevTasks => 
-        prevTasks.map(task => 
-          task.id === taskId ? transformedTask : task
-        )
+      setTasks((prev) =>
+        prev.map((task) => (task.id === taskId ? updatedTask : task))
       );
-      
-      return transformedTask;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al actualizar la tarea');
-      throw err;
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.message || "Error al actualizar el estado";
+      throw new Error(errorMsg);
     }
   };
 
   const uploadTaskImage = async (taskId: string, file: File) => {
     try {
       const updatedTask = await taskService.uploadTaskImage(taskId, file);
-      const transformedTask = transformTask(updatedTask);
-      
-      setTasks(prevTasks => 
-        prevTasks.map(task => 
-          task.id === taskId ? transformedTask : task
-        )
+      setTasks((prev) =>
+        prev.map((task) => (task.id === taskId ? updatedTask : task))
       );
-      
-      return transformedTask;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al subir la imagen');
-      throw err;
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.message || "Error al subir la imagen";
+      throw new Error(errorMsg);
     }
   };
-
-  useEffect(() => {
-    if (projectId) {
-      loadTasks(projectId);
-    }
-  }, [projectId]);
 
   return {
     tasks,
     loading,
     error,
-    loadTasks,
+    refetch: fetchTasks,
     updateTaskStatus,
     uploadTaskImage,
-    setError,
   };
-};
+}

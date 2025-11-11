@@ -1,11 +1,10 @@
 "use client";
-import type { Task } from "../../pages/tasks/task.types";
+import type { TaskResponse } from "../../services/task.service";
+import type { TaskStatus } from "../../pages/tasks/task.types";
 import { TASK_STATUS_CONFIG } from "../../pages/tasks/task.constants";
 
-interface TaskCardProps extends Task {
-  onEdit?: (task: Task) => void;
-  onDelete?: (id: string) => void;
-  onStatusChange?: (id: string, status: Task["status"]) => void;
+interface TaskCardProps extends TaskResponse {
+  onStatusChange?: (id: string, status: TaskStatus) => void;
   onImageUpload?: (taskId: string, file: File) => void;
 }
 
@@ -16,8 +15,6 @@ export default function TaskCard({
   createdAt,
   project,
   requirement,
-  onEdit,
-  onDelete,
   onStatusChange,
   onImageUpload,
 }: TaskCardProps) {
@@ -36,7 +33,7 @@ export default function TaskCard({
           <img
             className="size-14 rounded-box object-cover"
             src={imageUrl}
-            alt="Task"
+            alt="Task evidence"
           />
         </div>
       ) : (
@@ -60,7 +57,7 @@ export default function TaskCard({
 
       <div className="list-col-grow">
         <div className="font-semibold text-white">
-          {requirement?.description || "Sin descripcion"}
+          {requirement?.description || "Sin descripción"}
         </div>
         <div className="flex items-center gap-3 mt-1">
           {project && (
@@ -96,7 +93,11 @@ export default function TaskCard({
 
       {onStatusChange && (
         <div className="dropdown dropdown-end">
-          <label tabIndex={0} className="btn btn-sm btn-ghost" title="Cambiar estado">
+          <label
+            tabIndex={0}
+            className="btn btn-sm btn-ghost"
+            title="Cambiar estado"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -121,7 +122,7 @@ export default function TaskCard({
             {Object.entries(TASK_STATUS_CONFIG).map(([key, config]) => (
               <li key={key}>
                 <button
-                  onClick={() => onStatusChange(id, key as Task["status"])}
+                  onClick={() => onStatusChange(id, key as TaskStatus)}
                   className={status === key ? "active" : ""}
                 >
                   <span className={`badge ${config.color} badge-sm`}></span>
@@ -133,43 +134,11 @@ export default function TaskCard({
         </div>
       )}
 
-      {onEdit && (
-        <button
-          onClick={() =>
-            onEdit({
-              id,
-              status,
-              imageUrl,
-              createdAt,
-              updatedAt: createdAt,
-              projectId: project?.id || "",
-              requirementId: requirement?.id || "",
-              project,
-              requirement,
-            })
-          }
-          className="btn btn-square btn-ghost btn-sm"
-          title="Editar"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-            <path d="m15 5 4 4" />
-          </svg>
-        </button>
-      )}
-
       {onImageUpload && (
-        <label className="btn btn-square btn-ghost btn-sm" title="Subir evidencia de progreso">
+        <label
+          className="btn btn-square btn-ghost btn-sm"
+          title="Subir evidencia de progreso"
+        >
           <input
             type="file"
             accept="image/*"
@@ -197,30 +166,6 @@ export default function TaskCard({
             <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
         </label>
-      )}
-
-      {onDelete && (
-        <button
-          onClick={() => onDelete(id)}
-          className="btn btn-square btn-ghost btn-sm text-error hover:bg-error hover:text-white"
-          title="Eliminar"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M3 6h18" />
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-          </svg>
-        </button>
       )}
     </li>
   );

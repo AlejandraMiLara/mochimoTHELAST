@@ -55,7 +55,7 @@ function App() {
         ></Route>
 
         <Route
-          path="/requirements"
+          path="/requirements/:projectId"
           element={
             <ProtectedRoute>
               <Requirements />
