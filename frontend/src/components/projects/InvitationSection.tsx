@@ -5,7 +5,7 @@ import type { Project } from "../../pages/project/project.types";
 interface InvitationSectionProps {
   projects: Project[];
   userInvitationCodes: string[];
-  onJoinSuccess: (code: string) => void;
+  onJoinSuccess: (code: string) => void | Promise<any>;
 }
 
 export default function InvitationSection({
@@ -17,7 +17,7 @@ export default function InvitationSection({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const handleJoinProject = () => {
+  const handleJoinProject = async () => {
     setError("");
     setSuccess("");
 
@@ -26,30 +26,24 @@ export default function InvitationSection({
       return;
     }
 
-    // TODO: POST /projects/join con { invitationCode }
-    const projectToJoin = projects.find(
-      (p) => p.invitationCode === invitationCode.trim()
-    );
-
-    if (!projectToJoin) {
-      setError("Código de invitación inválido o proyecto no encontrado");
-      return;
-    }
-
+    // Si ya está unido en esta sesión, evita duplicar
     if (userInvitationCodes.includes(invitationCode.trim())) {
       setError("Ya estás unido a este proyecto");
       return;
     }
 
-    // Notificar exito al componente padre
-    onJoinSuccess(invitationCode.trim());
-    setSuccess(
-      `¡Te has unido exitosamente al proyecto "${projectToJoin.name}"!`
-    );
-    setInvitationCode("");
-
-    // Limpiar mensaje despues de 5 segundos
-    setTimeout(() => setSuccess(""), 5000);
+    try {
+      await Promise.resolve(onJoinSuccess(invitationCode.trim()));
+      setSuccess("¡Te has unido exitosamente al proyecto!");
+      setInvitationCode("");
+      setTimeout(() => setSuccess(""), 5000);
+    } catch (e: any) {
+      const msg =
+        e?.response?.data?.message ||
+        e?.message ||
+        "No se pudo unir al proyecto";
+      setError(msg);
+    }
   };
 
   return (

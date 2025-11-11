@@ -1,17 +1,12 @@
 // src/hooks/useProjects.ts
 import { useState, useEffect } from "react";
-import type {
-  Project,
-  ProjectFormData,
-} from "../../pages/project/project.types";
+import type { Project, ProjectFormData } from "../../pages/project/project.types";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_BASE_URL as string;
 
 function getAuthHeaders(): HeadersInit {
-  const token = localStorage.getItem("authToken");
   return {
     "Content-Type": "application/json",
-    ...(token && { Authorization: `Bearer ${token}` }),
   };
 }
 
@@ -35,6 +30,7 @@ export function useProjects(userId: string) {
       const response = await fetch(`${API_URL}/projects`, {
         method: "GET",
         headers: getAuthHeaders(),
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -44,9 +40,7 @@ export function useProjects(userId: string) {
       const data = await response.json();
       setProjects(data);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Error al cargar proyectos"
-      );
+      setError(err instanceof Error ? err.message : "Error al cargar proyectos");
       console.error("Error fetching projects:", err);
     } finally {
       setLoading(false);
@@ -56,10 +50,23 @@ export function useProjects(userId: string) {
   // Crear proyecto
   const createProject = async (formData: ProjectFormData) => {
     try {
+      const { name, description, imageUrl, paymentMode } = formData;
+      const paymentModeMapped =
+        paymentMode === "FULLADVANCE"
+          ? "UPFRONT"
+          : paymentMode === "FULLCOMPLETE"
+          ? "ONFINISH"
+          : paymentMode; // HALFHUP pasa tal cual
+      const payload: any = { name, description, paymentMode };
+      payload.paymentMode = paymentModeMapped;
+      if (imageUrl && imageUrl.trim() !== "") {
+        payload.imageUrl = imageUrl.trim();
+      }
       const response = await fetch(`${API_URL}/projects`, {
         method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify(formData),
+        credentials: "include",
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -78,10 +85,23 @@ export function useProjects(userId: string) {
   // Actualizar proyecto
   const updateProject = async (id: string, formData: ProjectFormData) => {
     try {
+      const { name, description, imageUrl, paymentMode } = formData;
+      const paymentModeMapped =
+        paymentMode === "FULLADVANCE"
+          ? "UPFRONT"
+          : paymentMode === "FULLCOMPLETE"
+          ? "ONFINISH"
+          : paymentMode;
+      const payload: any = { name, description, paymentMode };
+      payload.paymentMode = paymentModeMapped;
+      if (imageUrl && imageUrl.trim() !== "") {
+        payload.imageUrl = imageUrl.trim();
+      }
       const response = await fetch(`${API_URL}/projects/${id}`, {
         method: "PATCH",
         headers: getAuthHeaders(),
-        body: JSON.stringify(formData),
+        credentials: "include",
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -107,6 +127,7 @@ export function useProjects(userId: string) {
       const response = await fetch(`${API_URL}/projects/${id}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -123,10 +144,10 @@ export function useProjects(userId: string) {
   // Unirse a proyecto (clientes)
   const joinProject = async (invitationCode: string) => {
     try {
-      // TODO: Implementar endpoint POST /projects/join en el backend
-      const response = await fetch(`${API_URL}/projects/join`, {
+      const response = await fetch(`${API_URL}/invitations/join`, {
         method: "POST",
         headers: getAuthHeaders(),
+        credentials: "include",
         body: JSON.stringify({ invitationCode }),
       });
 

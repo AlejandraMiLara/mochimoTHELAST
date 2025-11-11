@@ -35,12 +35,8 @@ export default function Projects() {
   const isFreelancer = String(user.role) === "FREELANCER";
   const isClient = String(user.role) === "CLIENT";
 
-  // Filtrar proyectos según el rol
-  const filteredProjects = isClient
-    ? projects.filter((project) =>
-        userInvitationCodes.includes(project.invitationCode)
-      )
-    : projects;
+
+  const filteredProjects = projects;
 
   const handleCreate = () => {
     if (!isFreelancer) return;
@@ -62,12 +58,19 @@ export default function Projects() {
   const openEditModal = (project: any) => {
     if (!isFreelancer) return;
     setEditingId(project.id);
+    // Mapear el modo de pago del backend a las opciones del select del frontend
+    const paymentModeForForm =
+      project.paymentMode === "UPFRONT"
+        ? "FULLADVANCE"
+        : project.paymentMode === "ONFINISH"
+        ? "FULLCOMPLETE"
+        : project.paymentMode; 
     setFormData({
       name: project.name,
       description: project.description,
       imageUrl: project.imageUrl,
       status: project.status,
-      paymentMode: project.paymentMode,
+      paymentMode: paymentModeForForm,
       isPublic: project.isPublic,
     });
     setShowModal(true);

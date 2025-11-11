@@ -60,12 +60,16 @@ export default function ProjectCard({
     HALFHUP: "Mitad Adelantado",
     FULLADVANCE: "Todo Adelantado",
     FULLCOMPLETE: "Al Completar",
+    UPFRONT: "Todo Adelantado",
+    ONFINISH: "Al Completar",
   };
 
   const paymentModeColors = {
     HALFHUP: "badge-warning",
     FULLADVANCE: "badge-success",
     FULLCOMPLETE: "badge-info",
+    UPFRONT: "badge-success",
+    ONFINISH: "badge-info",
   };
 
   return (
