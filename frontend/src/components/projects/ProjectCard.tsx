@@ -123,48 +123,46 @@ export default function ProjectCard({
           </div>
         )}
 
-        {/* Botones de accion - solo se muestran si showActions es true */}
-        {showActions && (onEdit || onDelete) && (
-          <div className="card-actions justify-end mt-4 flex items-center gap-2">
-            {onEdit && (
-              <button
-                onClick={() =>
-                  onEdit({
-                    id,
-                    name,
-                    description,
-                    imageUrl: undefined,
-                    paymentMode,
-                    status,
-                    invitationCode,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    ownerId: "",
-                    isPublic: false,
-                  })
-                }
-                className="btn btn-primary text-white btn-sm"
-              >
-                Editar
-              </button>
-            )}
-            {onDelete && (
-              <button
-                onClick={() => onDelete(id)}
-                className="btn btn-error btn-sm text-white"
-              >
-                Eliminar
-              </button>
-            )}
-
-            <Link
-              to="/requirements"
-              className="btn btn-primary btn-sm text-white"
+        {/* Botones de accion */}
+        <div className="card-actions justify-end mt-4 flex items-center gap-2">
+          {showActions && onEdit && (
+            <button
+              onClick={() =>
+                onEdit({
+                  id,
+                  name,
+                  description,
+                  imageUrl: undefined,
+                  paymentMode,
+                  status,
+                  invitationCode,
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                  ownerId: "",
+                  isPublic: false,
+                })
+              }
+              className="btn btn-primary text-white btn-sm"
             >
-              Requisitos
-            </Link>
-          </div>
-        )}
+              Editar
+            </button>
+          )}
+          {showActions && onDelete && (
+            <button
+              onClick={() => onDelete(id)}
+              className="btn btn-error btn-sm text-white"
+            >
+              Eliminar
+            </button>
+          )}
+
+          <Link
+            to={`/requirements/${id}`}
+            className="btn btn-primary btn-sm text-white"
+          >
+            Requisitos
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -1,20 +1,24 @@
-// src/pages/Requirements.tsx
+// src/pages/requirements/Requirements.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import DashboardLayout from "../../layouts/DashBoardLayout";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import RequirementsTable from "../../components/requirements/RequirementsTable";
 import RequirementModal from "../../components/requirements/RequirementModal";
 import ReviewModal from "../../components/requirements/ReviewModal";
 import RequirementsHeader from "../../components/requirements/RequirementsHeader";
 import RequirementsStats from "../../components/requirements/RequirementStats";
 import { useRequirements } from "../../hooks/Requirements/useRequirements";
+import { useProjects } from "../../hooks/projects/useProjects";
 
 export default function Requirements() {
   const { user } = useAuth();
-  const { projectId } = useParams<{ projectId: string }>();
+  const { projectId: projectIdParam } = useParams<{ projectId: string }>();
+  const navigate = useNavigate();
+  const [selectedProjectId, setSelectedProjectId] = useState(projectIdParam || "");
+
   const {
     project,
     requirements,
@@ -30,43 +34,88 @@ export default function Requirements() {
     deleteRequirement,
     submitForReview,
     reviewRequirements,
-  } = useRequirements(projectId || "1");
+  } = useRequirements(selectedProjectId || null);
+
+  const {
+    projects,
+    loading: projectsLoading,
+    error: projectsError,
+    refetch: refetchProjects,
+  } = useProjects(user?.userId || "");
 
   const [showModal, setShowModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({ description: "" });
 
+  useEffect(() => {
+    if (projectIdParam) {
+      setSelectedProjectId(projectIdParam);
+    } else {
+      setSelectedProjectId("");
+    }
+  }, [projectIdParam]);
+
   if (!user) return null;
 
-  const handleCreate = () => {
-    createRequirement(formData.description);
-    setShowModal(false);
-    resetForm();
-  };
-
-  const handleUpdate = (id: string) => {
-    updateRequirement(id, formData.description);
-    setEditingId(null);
-    setShowModal(false);
-    resetForm();
-  };
-
-  const handleDelete = (id: string) => {
-    if (confirm("¿Eliminar este requisito?")) {
-      deleteRequirement(id);
+  const handleProjectSelect = (value: string) => {
+    setSelectedProjectId(value);
+    if (value) {
+      navigate("/requirements/" + value);
+    } else {
+      navigate("/requirements");
     }
   };
 
-  const handleSubmitForReview = () => {
-    if (confirm("¿Enviar requisitos a revisión del cliente?")) {
-      submitForReview();
+  const handleCreate = async () => {
+    try {
+      await createRequirement(formData.description);
+      setShowModal(false);
+      resetForm();
+    } catch {
+      /* handled in hook */
     }
   };
 
-  const handleReview = (action: "APPROVE" | "REVISION", reason?: string) => {
-    reviewRequirements(action, reason);
-    setShowReviewModal(false);
+  const handleUpdate = async (id: string) => {
+    try {
+      await updateRequirement(id, formData.description);
+      setEditingId(null);
+      setShowModal(false);
+      resetForm();
+    } catch {
+      /* noop */
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("¿Eliminar este requisito?")) return;
+    try {
+      await deleteRequirement(id);
+    } catch {
+      /* noop */
+    }
+  };
+
+  const handleSubmitForReview = async () => {
+    if (!confirm("¿Enviar requisitos a revisión del cliente?")) return;
+    try {
+      await submitForReview();
+    } catch {
+      /* noop */
+    }
+  };
+
+  const handleReview = async (
+    action: "APPROVE" | "REVISION",
+    reason?: string
+  ) => {
+    try {
+      await reviewRequirements(action, reason);
+      setShowReviewModal(false);
+    } catch {
+      /* noop */
+    }
   };
 
   const resetForm = () => {
@@ -85,62 +134,143 @@ export default function Requirements() {
     setShowModal(true);
   };
 
+  const showRequirementsError = Boolean(error && selectedProjectId);
+
   return (
     <DashboardLayout>
-      <div>
-        {error && (
-          <div className="alert alert-error mb-6">
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">Gestión de Requisitos</h1>
+        </div>
+
+        <div className="bg-base-200 border border-blue-200 text-white px-4 py-3 rounded mb-6">
+          <div className="flex items-start gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="stroke-current shrink-0 h-6 w-6"
+              className="h-5 w-5 mt-0.5 shrink-0"
               fill="none"
               viewBox="0 0 24 24"
+              stroke="currentColor"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span>{error}</span>
+            <div>
+              <p className="font-semibold">Los requisitos definen el alcance</p>
+              <p className="text-sm">
+                Como freelancer puedes redactarlos y enviarlos a revisión. Como cliente puedes aprobarlos o pedir cambios antes de continuar.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {projectsError && (
+          <div className="alert alert-error mb-4">
+            <span>{projectsError}</span>
+            <button className="btn btn-sm" onClick={refetchProjects}>
+              Reintentar
+            </button>
           </div>
         )}
 
-        {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <span className="loading loading-spinner loading-lg"></span>
-            <span className="ml-2 text-white">Cargando requisitos...</span>
+        <div className="bg-base-200 rounded-lg shadow-md p-6 mb-6">
+          <label className="block text-sm font-medium text-white mb-2">
+            Selecciona un proyecto
+          </label>
+          <select
+            className="select select-bordered w-full max-w-xl bg-gray-900/50 text-gray-100"
+            value={selectedProjectId}
+            onChange={(e) => handleProjectSelect(e.target.value)}
+            disabled={projectsLoading}
+          >
+            <option value="">
+              {projectsLoading ? "Cargando proyectos..." : "Selecciona un proyecto"}
+            </option>
+            {projects.map((proj) => (
+              <option key={proj.id} value={proj.id}>
+                {proj.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {!selectedProjectId ? (
+          <div className="bg-base-200 rounded-lg shadow-md p-12 text-center border border-dashed border-gray-400">
+            <div className="flex flex-col items-center text-white">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-12 w-12 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 19a9 9 0 1114 0H5z"
+                />
+              </svg>
+              <h3 className="text-xl font-semibold">Selecciona un proyecto</h3>
+              <p className="text-sm text-base-content/70 mt-2">
+                Elige un proyecto arriba para gestionar sus requisitos.
+              </p>
+            </div>
           </div>
         ) : (
           <>
-            {project && (
-              <RequirementsHeader
-                project={project}
-                isFreelancer={isFreelancer}
-                isClient={isClient}
-                canEditRequirements={canEditRequirements}
-                canSubmitForReview={canSubmitForReview}
-                canReview={canReview}
-                onCreateClick={openCreateModal}
-                onSubmitClick={handleSubmitForReview}
-                onReviewClick={() => setShowReviewModal(true)}
-              />
+            {showRequirementsError && (
+              <div className="alert alert-error mb-6">
+                <span>{error}</span>
+              </div>
             )}
 
-            <RequirementsTable
-              requirements={requirements}
-              isFreelancer={isFreelancer}
-              canEditRequirements={canEditRequirements}
-              onEdit={openEditModal}
-              onDelete={handleDelete}
-            />
+            {loading ? (
+              <div className="bg-base-200 rounded-lg shadow-md p-12 text-center">
+                <div className="loading loading-spinner loading-lg text-cyan-500"></div>
+                <p className="text-white mt-4">Cargando requisitos...</p>
+              </div>
+            ) : (
+              <>
+                {project && (
+                  <RequirementsHeader
+                    project={project}
+                    isFreelancer={isFreelancer}
+                    isClient={isClient}
+                    canEditRequirements={canEditRequirements}
+                    canSubmitForReview={canSubmitForReview}
+                    canReview={canReview}
+                    onCreateClick={openCreateModal}
+                    onSubmitClick={handleSubmitForReview}
+                    onReviewClick={() => setShowReviewModal(true)}
+                  />
+                )}
 
-            {project && (
-              <RequirementsStats
-                requirements={requirements}
-                project={project}
-              />
+                <RequirementsTable
+                  requirements={requirements}
+                  isFreelancer={isFreelancer}
+                  canEditRequirements={canEditRequirements}
+                  onEdit={openEditModal}
+                  onDelete={handleDelete}
+                />
+
+                {project && (
+                  <RequirementsStats
+                    requirements={requirements}
+                    project={project}
+                  />
+                )}
+              </>
             )}
           </>
         )}

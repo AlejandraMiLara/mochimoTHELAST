@@ -10,6 +10,9 @@ export default function DashboardLayout({
   const { user, logout } = useAuth();
   const location = useLocation();
 
+  const isActive = (path: string) =>
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
+
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -55,7 +58,7 @@ export default function DashboardLayout({
             <Link
               to="/dashboard"
               className={`w-full text-left px-4 py-3 rounded-lg transition flex items-center gap-2 ${
-                location.pathname === "/dashboard"
+                isActive("/dashboard")
                   ? "bg-blue-900 text-white"
                   : "text-white hover:bg-gray-100"
               }`}
@@ -82,7 +85,7 @@ export default function DashboardLayout({
             <Link
               to="/projects"
               className={`w-full text-left px-4 py-3 rounded-lg transition flex items-center gap-2 ${
-                location.pathname === "/projects"
+                isActive("/projects")
                   ? "bg-blue-900 text-white"
                   : "text-white hover:bg-gray-100"
               }`}
@@ -109,7 +112,7 @@ export default function DashboardLayout({
                 <Link
                   to="/tasks"
                   className={`w-full text-left px-4 py-3 rounded-lg transition flex items-center gap-2 ${
-                    location.pathname === "/tasks"
+                    isActive("/tasks")
                       ? "bg-blue-900 text-white"
                       : "text-white hover:bg-gray-100"
                   }`}
@@ -211,14 +214,14 @@ export default function DashboardLayout({
             {/* Solo para Clientes */}
             {isClient && (
               <>
-                <Link
-                  to="/requirements"
-                  className={`w-full text-left px-4 py-3 rounded-lg transition flex items-center gap-2 ${
-                    location.pathname === "/requirements"
-                      ? "bg-blue-900 text-white"
-                      : "text-white hover:bg-gray-100"
-                  }`}
-                >
+            <Link
+              to="/requirements"
+              className={`w-full text-left px-4 py-3 rounded-lg transition flex items-center gap-2 ${
+                isActive("/requirements")
+                  ? "bg-blue-900 text-white"
+                  : "text-white hover:bg-gray-100"
+              }`}
+            >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"

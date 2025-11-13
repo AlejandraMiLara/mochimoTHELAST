@@ -55,6 +55,14 @@ function App() {
         ></Route>
 
         <Route
+          path="/requirements"
+          element={
+            <ProtectedRoute>
+              <Requirements />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
           path="/requirements/:projectId"
           element={
             <ProtectedRoute>
