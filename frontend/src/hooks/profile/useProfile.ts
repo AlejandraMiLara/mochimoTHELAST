@@ -66,7 +66,11 @@ export function useProfile(): UseProfileResult {
     setLoadingPayment(true);
     try {
       const data = await getMyPaymentData();
-      setPaymentData(data);
+      setPaymentData({
+        bankName: data.bankName,
+        accountHolder: data.accountHolder,
+        accountNumber: data.accountNumber,
+      });
     } catch (err: any) {
       if (err?.response?.status === 404) {
         setPaymentData(null);
@@ -115,7 +119,11 @@ export function useProfile(): UseProfileResult {
       setError(null);
       try {
         const updated = await updateMyPaymentData(data);
-        setPaymentData(updated);
+        setPaymentData({
+          bankName: updated.bankName,
+          accountHolder: updated.accountHolder,
+          accountNumber: updated.accountNumber,
+        });
       } catch (err: any) {
         setError(err?.message ?? "No se pudo guardar los datos de pago");
         throw err;
