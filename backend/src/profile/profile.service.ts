@@ -20,6 +20,12 @@ constructor(
     return profile;
   }
 
+  async findProfileOptional(userId: string): Promise<Profile | null> {
+    return this.prisma.profile.findUnique({
+      where: { userId },
+    });
+  }
+
   async upsertProfile(
     userId: string,
     data: { bio?: string; avatarUrl?: string },
@@ -27,13 +33,15 @@ constructor(
     return this.prisma.profile.upsert({
       where: { userId },
       update: {
-        bio: data.bio,
-        avatarUrl: data.avatarUrl,
+        ...(data.bio !== undefined ? { bio: data.bio ?? '' } : {}),
+        ...(data.avatarUrl !== undefined
+          ? { avatarUrl: data.avatarUrl ?? '' }
+          : {}),
       },
       create: {
         userId,
-        bio: data.bio,
-        avatarUrl: data.avatarUrl,
+        bio: data.bio ?? '',
+        avatarUrl: data.avatarUrl ?? '',
       },
     });
   }
