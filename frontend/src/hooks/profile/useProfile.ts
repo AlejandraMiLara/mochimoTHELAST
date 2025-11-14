@@ -57,26 +57,18 @@ export function useProfile(): UseProfileResult {
   }, []);
 
   const refreshPayment = useCallback(async () => {
-    if (user?.role !== "FREELANCER") {
-      setPaymentData(null);
-      setLoadingPayment(false);
-      return;
-    }
-
     setLoadingPayment(true);
+    setError(null);
     try {
       const data = await getMyPaymentData();
       setPaymentData(data);
     } catch (err: any) {
-      if (err?.response?.status === 404) {
-        setPaymentData(null);
-      } else {
-        setError(err?.message ?? "No se pudo cargar los datos de pago");
-      }
+      setPaymentData(null);
+      setError(err?.message ?? "No se pudo cargar los datos de pago");
     } finally {
       setLoadingPayment(false);
     }
-  }, [user?.role]);
+  }, []);
 
   useEffect(() => {
     refreshProfile();
@@ -88,17 +80,8 @@ export function useProfile(): UseProfileResult {
       setSavingProfile(true);
       setError(null);
       try {
-        await updateMyProfile(data);
-        setProfile((prev) => ({
-          bio:
-            data.bio !== undefined
-              ? data.bio ?? ""
-              : prev.bio,
-          avatarUrl:
-            data.avatarUrl !== undefined
-              ? data.avatarUrl ?? ""
-              : prev.avatarUrl,
-        }));
+        const updated = await updateMyProfile(data);
+        setProfile(updated);
       } catch (err: any) {
         setError(err?.message ?? "No se pudo guardar el perfil");
         throw err;

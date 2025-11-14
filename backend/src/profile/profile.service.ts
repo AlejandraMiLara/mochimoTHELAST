@@ -33,15 +33,13 @@ constructor(
     return this.prisma.profile.upsert({
       where: { userId },
       update: {
-        ...(data.bio !== undefined ? { bio: data.bio ?? '' } : {}),
-        ...(data.avatarUrl !== undefined
-          ? { avatarUrl: data.avatarUrl ?? '' }
-          : {}),
+        bio: data.bio,
+        avatarUrl: data.avatarUrl,
       },
       create: {
         userId,
-        bio: data.bio ?? '',
-        avatarUrl: data.avatarUrl ?? '',
+        bio: data.bio,
+        avatarUrl: data.avatarUrl,
       },
     });
   }
