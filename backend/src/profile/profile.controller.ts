@@ -24,10 +24,16 @@ export class ProfileController {
   constructor(private profileService: ProfileService) {}
 
   @Get('me')
-  getMyProfile(
+  async getMyProfile(
     @GetUser() user: JwtPayload,
-  ): JwtPayload {
-    return user;
+  ) {
+    const profile = await this.profileService.findProfileOptional(user.userId);
+
+    return {
+      ...user,
+      bio: profile?.bio ?? '',
+      avatarUrl: profile?.avatarUrl ?? '',
+    };
   }
 
   @Put('me')

@@ -2,22 +2,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
 import DashboardLayout from "../../layouts/DashBoardLayout";
+import { useAuth } from "../../hooks/useAuth";
 import { useNavigate, useParams } from "react-router-dom";
+import { useProjects } from "../../hooks/projects/useProjects";
+import { useRequirements } from "../../hooks/Requirements/useRequirements";
+import RequirementsHeader from "../../components/requirements/RequirementsHeader";
 import RequirementsTable from "../../components/requirements/RequirementsTable";
+import RequirementsStats from "../../components/requirements/RequirementStats";
 import RequirementModal from "../../components/requirements/RequirementModal";
 import ReviewModal from "../../components/requirements/ReviewModal";
-import RequirementsHeader from "../../components/requirements/RequirementsHeader";
-import RequirementsStats from "../../components/requirements/RequirementStats";
-import { useRequirements } from "../../hooks/Requirements/useRequirements";
-import { useProjects } from "../../hooks/projects/useProjects";
 
 export default function Requirements() {
   const { user } = useAuth();
   const { projectId: projectIdParam } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+
   const [selectedProjectId, setSelectedProjectId] = useState(projectIdParam || "");
+  const [showModal, setShowModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formData, setFormData] = useState({ description: "" });
 
   const {
     project,
@@ -42,11 +47,6 @@ export default function Requirements() {
     error: projectsError,
     refetch: refetchProjects,
   } = useProjects(user?.userId || "");
-
-  const [showModal, setShowModal] = useState(false);
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ description: "" });
 
   useEffect(() => {
     if (projectIdParam) {
@@ -73,7 +73,7 @@ export default function Requirements() {
       setShowModal(false);
       resetForm();
     } catch {
-      /* handled in hook */
+      /* manejado */
     }
   };
 
@@ -118,9 +118,7 @@ export default function Requirements() {
     }
   };
 
-  const resetForm = () => {
-    setFormData({ description: "" });
-  };
+  const resetForm = () => setFormData({ description: "" });
 
   const openEditModal = (req: any) => {
     setEditingId(req.id);
@@ -138,12 +136,15 @@ export default function Requirements() {
 
   return (
     <DashboardLayout>
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-6">
+      <div className="mb-8 space-y-6">
+        <header>
           <h1 className="text-3xl font-bold text-gray-900">Gestión de Requisitos</h1>
-        </div>
+          <p className="text-sm text-gray-500 mt-2">
+            Crea, envía y aprueba requisitos para mantener alineado el proyecto.
+          </p>
+        </header>
 
-        <div className="bg-base-200 border border-blue-200 text-white px-4 py-3 rounded mb-6">
+        <div className="bg-base-200 border border-blue-200 text-white px-4 py-3 rounded">
           <div className="flex items-start gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -160,16 +161,16 @@ export default function Requirements() {
               />
             </svg>
             <div>
-              <p className="font-semibold">Los requisitos definen el alcance</p>
+              <p className="font-semibold">Los requisitos se revisan antes de avanzar</p>
               <p className="text-sm">
-                Como freelancer puedes redactarlos y enviarlos a revisión. Como cliente puedes aprobarlos o pedir cambios antes de continuar.
+                Una vez enviados a revisión, el cliente puede aprobarlos o solicitar cambios. Solo así podrás avanzar a contratos y tareas.
               </p>
             </div>
           </div>
         </div>
 
         {projectsError && (
-          <div className="alert alert-error mb-4">
+          <div className="alert alert-error">
             <span>{projectsError}</span>
             <button className="btn btn-sm" onClick={refetchProjects}>
               Reintentar
@@ -177,7 +178,7 @@ export default function Requirements() {
           </div>
         )}
 
-        <div className="bg-base-200 rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-base-200 rounded-lg shadow-md p-6">
           <label className="block text-sm font-medium text-white mb-2">
             Selecciona un proyecto
           </label>
@@ -199,7 +200,7 @@ export default function Requirements() {
         </div>
 
         {!selectedProjectId ? (
-          <div className="bg-base-200 rounded-lg shadow-md p-12 text-center border border-dashed border-gray-400">
+          <div className="bg-base-200 rounded-lg shadow-md p-12 text-center border border-dashed border-gray-500">
             <div className="flex flex-col items-center text-white">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -208,18 +209,8 @@ export default function Requirements() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 19a9 9 0 1114 0H5z"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 19a9 9 0 1114 0H5z" />
               </svg>
               <h3 className="text-xl font-semibold">Selecciona un proyecto</h3>
               <p className="text-sm text-base-content/70 mt-2">
@@ -228,9 +219,9 @@ export default function Requirements() {
             </div>
           </div>
         ) : (
-          <>
+          <div className="space-y-6">
             {showRequirementsError && (
-              <div className="alert alert-error mb-6">
+              <div className="alert alert-error">
                 <span>{error}</span>
               </div>
             )}
@@ -272,7 +263,7 @@ export default function Requirements() {
                 )}
               </>
             )}
-          </>
+          </div>
         )}
       </div>
 
