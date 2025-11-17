@@ -1,4 +1,3 @@
-// src/components/projects/InvitationSection.tsx
 import { useState } from "react";
 import type { Project } from "../../pages/project/project.types";
 
@@ -26,7 +25,6 @@ export default function InvitationSection({
       return;
     }
 
-    // Si ya está unido en esta sesión, evita duplicar
     if (userInvitationCodes.includes(invitationCode.trim())) {
       setError("Ya estás unido a este proyecto");
       return;
@@ -106,7 +104,6 @@ export default function InvitationSection({
             </button>
           </div>
 
-          {/* Mensajes de error y exito */}
           {error && (
             <div className="alert alert-error mt-3">
               <svg

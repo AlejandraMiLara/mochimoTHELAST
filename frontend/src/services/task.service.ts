@@ -24,13 +24,11 @@ export interface UpdateTaskStatusDto {
 }
 
 export const taskService = {
-  // Obtener todas las tareas de un proyecto
   getTasksByProject: async (projectId: string): Promise<TaskResponse[]> => {
     const response = await api.get(`/projects/${projectId}/tasks`);
     return response.data;
   },
 
-  // Actualizar solo el estado de una tarea
   updateTaskStatus: async (
     taskId: string,
     status: TaskStatus
@@ -39,7 +37,6 @@ export const taskService = {
     return response.data;
   },
 
-  // Subir imagen de evidencia
   uploadTaskImage: async (
     taskId: string,
     file: File

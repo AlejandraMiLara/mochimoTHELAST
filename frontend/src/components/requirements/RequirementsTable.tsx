@@ -1,4 +1,3 @@
-// src/components/requirements/RequirementsTable.tsx
 import type { Requirement } from "../../hooks/Requirements/useRequirements";
 
 interface RequirementsTableProps {

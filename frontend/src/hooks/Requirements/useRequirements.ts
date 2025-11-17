@@ -1,4 +1,3 @@
-// src/hooks/requirements/useRequirements.ts
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAuth } from "../useAuth";
 import api from "../../services/api";
@@ -60,7 +59,9 @@ interface UseRequirementsResult {
   refetch: () => Promise<void>;
 }
 
-export function useRequirements(projectId?: string | null): UseRequirementsResult {
+export function useRequirements(
+  projectId?: string | null
+): UseRequirementsResult {
   const { user } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
@@ -111,7 +112,9 @@ export function useRequirements(projectId?: string | null): UseRequirementsResul
 
     return {
       canEditRequirements:
-        Boolean(project) && isFreelancer && editableStatuses.includes(project!.status),
+        Boolean(project) &&
+        isFreelancer &&
+        editableStatuses.includes(project!.status),
       canSubmitForReview:
         Boolean(projectId) &&
         isFreelancer &&
@@ -175,7 +178,8 @@ export function useRequirements(projectId?: string | null): UseRequirementsResul
   const reviewRequirements = useCallback(
     async (action: "APPROVE" | "REVISION", reason?: string) => {
       if (!projectId) return;
-      const backendAction = action === "REVISION" ? "REQUEST_REVISION" : "APPROVE";
+      const backendAction =
+        action === "REVISION" ? "REQUEST_REVISION" : "APPROVE";
       await runAction(() =>
         requirementService.reviewRequirements(projectId, backendAction, reason)
       );

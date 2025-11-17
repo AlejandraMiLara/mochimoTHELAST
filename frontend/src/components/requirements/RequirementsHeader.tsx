@@ -1,4 +1,3 @@
-// src/components/requirements/RequirementsHeader.tsx
 import type { Project } from "../../hooks/Requirements/useRequirements";
 
 interface RequirementsHeaderProps {
@@ -12,22 +11,6 @@ interface RequirementsHeaderProps {
   onSubmitClick: () => void;
   onReviewClick: () => void;
 }
-
-// const projectStatusColors: Record<string, string> = {
-//   PENDING: "badge-ghost",
-//   REVIEW: "badge-warning",
-//   APPROVED: "badge-success",
-//   INPROGRESS: "badge-info",
-//   COMPLETED: "badge-success",
-// };
-
-// const projectStatusText: Record<string, string> = {
-//   PENDING: "Pendiente",
-//   REVIEW: "En Revisión",
-//   APPROVED: "Aprobado",
-//   INPROGRESS: "En Progreso",
-//   COMPLETED: "Completado",
-// };
 
 export default function RequirementsHeader({
   project,
@@ -51,7 +34,6 @@ export default function RequirementsHeader({
         </div>
       </div>
 
-      {/* Acciones del Freelancer */}
       {isFreelancer && (
         <div className="flex gap-3">
           {canEditRequirements && (
@@ -108,7 +90,6 @@ export default function RequirementsHeader({
         </div>
       )}
 
-      {/* Acciones del Cliente */}
       {canReview && (
         <div className="alert alert-info">
           <svg

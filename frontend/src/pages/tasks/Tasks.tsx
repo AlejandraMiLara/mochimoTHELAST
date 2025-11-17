@@ -22,7 +22,7 @@ export default function Tasks() {
     refetch: refetchProjects,
   } = useProjects(userId);
 
-  // Cargar tareas según el proyecto seleccionado
+  // Cargar tareas segun el proyecto seleccionado
   const {
     tasks,
     loading: tasksLoading,
@@ -71,7 +71,6 @@ export default function Tasks() {
   return (
     <DashboardLayout>
       <div>
-        {/* Header */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900">
@@ -79,7 +78,6 @@ export default function Tasks() {
             </h1>
           </div>
 
-          {/* Mensaje informativo */}
           <div className="bg-base-200 border border-blue-200 text-white px-4 py-3 rounded mb-4">
             <div className="flex items-start gap-2">
               <svg
@@ -109,7 +107,6 @@ export default function Tasks() {
             </div>
           </div>
 
-          {/* Mensaje de error si falla la carga de proyectos */}
           {projectsError && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 flex items-center justify-between">
               <div>
@@ -134,7 +131,7 @@ export default function Tasks() {
               value={selectedProjectId}
               onChange={(e) => {
                 setSelectedProjectId(e.target.value);
-                setFilterStatus("ALL"); // Reset filter al cambiar proyecto
+                setFilterStatus("ALL");
               }}
               disabled={projectsLoading}
             >
@@ -153,7 +150,7 @@ export default function Tasks() {
             </select>
           </div>
 
-          {/* Filtros y estadísticas - solo si hay proyecto seleccionado */}
+          {/* Filtros y estadisticas - solo si hay proyecto seleccionado */}
           {selectedProjectId && (
             <div className="bg-base-200 rounded-lg shadow-md p-6 mb-6">
               <div className="flex items-center justify-between mb-4">
@@ -278,7 +275,6 @@ export default function Tasks() {
           </>
         )}
 
-        {/* Mensaje inicial - sin proyecto seleccionado */}
         {!selectedProjectId && (
           <div className="bg-base-200 border-2 border-dashed border-slate-300 rounded-lg p-12 text-center">
             <svg

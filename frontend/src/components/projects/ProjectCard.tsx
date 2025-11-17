@@ -1,4 +1,3 @@
-// src/components/ProjectCard.tsx
 "use client";
 
 import type { Project } from "../../pages/project/project.types";
@@ -21,7 +20,7 @@ export default function ProjectCard({
   invitationCode,
   onEdit,
   onDelete,
-  showActions = true, // Por defecto true para mantener compatibilidad
+  showActions = true,
 }: ProjectCardProps) {
   const statusColors: Record<string, string> = {
     INPROGRESS: "badge-success",
@@ -86,7 +85,6 @@ export default function ProjectCard({
 
         <p className="text-base-content/70 text-sm">{description}</p>
 
-        {/* Modo de Pago */}
         <div className="mt-3 flex items-center gap-2">
           <span className="text-xs text-base-content/60 font-medium">
             Modo de Pago:
@@ -96,7 +94,6 @@ export default function ProjectCard({
           </span>
         </div>
 
-        {/* Codigo de Invitacion */}
         <div className="mt-2 p-2 bg-base-300/50 rounded-lg">
           <div className="flex justify-between items-center">
             <span className="text-xs text-base-content/60 font-medium">
@@ -108,7 +105,6 @@ export default function ProjectCard({
           </div>
         </div>
 
-        {/* Progreso */}
         {progress > 0 && (
           <div className="mt-4">
             <div className="flex justify-between text-xs text-base-content/60 mb-1">
@@ -123,7 +119,6 @@ export default function ProjectCard({
           </div>
         )}
 
-        {/* Botones de accion */}
         <div className="card-actions justify-end mt-4 flex items-center gap-2">
           {showActions && onEdit && (
             <button

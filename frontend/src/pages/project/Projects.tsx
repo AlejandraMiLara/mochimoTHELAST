@@ -1,4 +1,3 @@
-// src/pages/projects/Projects.tsx
 import { useState } from "react";
 import ProjectCard from "../../components/projects/ProjectCard";
 import DashboardLayout from "../../layouts/DashBoardLayout";
@@ -35,7 +34,6 @@ export default function Projects() {
   const isFreelancer = String(user.role) === "FREELANCER";
   const isClient = String(user.role) === "CLIENT";
 
-
   const filteredProjects = projects;
 
   const handleCreate = () => {
@@ -64,7 +62,7 @@ export default function Projects() {
         ? "FULLADVANCE"
         : project.paymentMode === "ONFINISH"
         ? "FULLCOMPLETE"
-        : project.paymentMode; 
+        : project.paymentMode;
     setFormData({
       name: project.name,
       description: project.description,
@@ -96,7 +94,6 @@ export default function Projects() {
   return (
     <DashboardLayout>
       <div>
-        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-3xl font-bold text-gray-900">
@@ -134,7 +131,6 @@ export default function Projects() {
           )}
         </div>
 
-        {/* Sección de invitación (solo clientes) */}
         {isClient && (
           <InvitationSection
             projects={projects}
@@ -143,7 +139,6 @@ export default function Projects() {
           />
         )}
 
-        {/* Grid de proyectos */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map((project) => (
             <ProjectCard
@@ -155,7 +150,6 @@ export default function Projects() {
           ))}
         </div>
 
-        {/* Mensaje si no hay proyectos */}
         {filteredProjects.length === 0 && (
           <div className="bg-base-200 border-2 border-dashed border-black rounded-lg p-12 text-center">
             <svg
@@ -180,7 +174,7 @@ export default function Projects() {
             <p className="text-blue-700 mb-4">
               {isFreelancer
                 ? "Crea tu primer proyecto para comenzar a trabajar"
-                : "Usa el código de invitación arriba para unirte a un proyecto"}
+                : "Usa el codigo de invitacion arriba para unirte a un proyecto"}
             </p>
             {isFreelancer && (
               <button
@@ -197,7 +191,6 @@ export default function Projects() {
         )}
       </div>
 
-      {/* Modal de formulario (solo freelancers) */}
       {isFreelancer && (
         <ProjectFormModal
           isOpen={showModal}

@@ -4,7 +4,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Paleta de colores fríos */
 :root {
   --color-blue-900: #1e3a8a;
   --color-blue-light: #93c5fd;
@@ -12,7 +11,6 @@ html {
   --color-gray-light: #f9fafb;
   --color-white: #e9e9e9;
   --color-purple: #8b68ff;
-  --color-cyan: c;
 }
 
 body {

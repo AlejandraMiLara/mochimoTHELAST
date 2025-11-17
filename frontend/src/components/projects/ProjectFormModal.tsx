@@ -1,4 +1,3 @@
-// src/components/ProjectFormModal.tsx
 "use client";
 import type {
   ProjectFormData,
@@ -37,7 +36,6 @@ export default function ProjectFormModal({
         </h3>
 
         <div className="space-y-4">
-          {/* Nombre */}
           <div>
             <label className="block text-sm font-medium text-white mb-2">
               Nombre del Proyecto *
@@ -51,7 +49,6 @@ export default function ProjectFormModal({
             />
           </div>
 
-          {/* Descripcion */}
           <div>
             <label className="block text-sm font-medium text-white mb-2">
               Descripcion *
@@ -65,7 +62,6 @@ export default function ProjectFormModal({
             ></textarea>
           </div>
 
-          {/* URL de Imagen */}
           <div>
             <label className="block text-sm font-medium text-white mb-2">
               URL de Imagen (opcional)
@@ -79,9 +75,7 @@ export default function ProjectFormModal({
             />
           </div>
 
-          {/* Grid de 2 columnas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Modo de Pago */}
             <div>
               <label className="block text-sm font-medium text-white mb-2">
                 Modo de Pago *
@@ -101,7 +95,6 @@ export default function ProjectFormModal({
               </select>
             </div>
 
-            {/* Estado */}
             <div>
               <label className="block text-sm font-medium text-white mb-2">
                 Estado *
@@ -122,7 +115,6 @@ export default function ProjectFormModal({
             </div>
           </div>
 
-          {/* Visibilidad */}
           <div className="flex items-center gap-3">
             <input
               type="checkbox"
@@ -140,7 +132,6 @@ export default function ProjectFormModal({
           </div>
         </div>
 
-        {/* Botones */}
         <div className="flex gap-3 mt-6">
           <button
             onClick={onClose}

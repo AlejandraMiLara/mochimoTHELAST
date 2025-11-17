@@ -1,4 +1,3 @@
-// src/constants/project.constants.ts
 import type { ProjectStatus, PaymentMode } from "./project.types";
 
 export const PROJECT_STATUS_CONFIG: Record<

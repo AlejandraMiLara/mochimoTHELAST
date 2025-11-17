@@ -1,4 +1,3 @@
-// src/pages/DashboardPage.tsx
 import { useAuth } from "../hooks/useAuth";
 import DashboardLayout from "../layouts/DashBoardLayout";
 import { useNavigate } from "react-router-dom";
@@ -27,7 +26,7 @@ export default function DashboardPage() {
           </span>
         </p>
       </div>
-      {/* Acciones rápidas */}
+
       <div className="mt-12">
         <h3 className="text-2xl font-bold text-gray-900 mb-6">
           Acciones Rápidas

@@ -1,4 +1,3 @@
-// src/services/requirement.service.ts
 import api from "./api";
 
 export type RequirementStatus =

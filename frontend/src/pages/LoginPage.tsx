@@ -5,10 +5,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
-/**
- * Página de Login
- * Conecta con POST /auth/login del backend NestJS
- */
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,7 +39,6 @@ export default function LoginPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start h-full">
-          {/* Lado izquierdo - Información */}
           <div className="hidden lg:flex flex-col justify-center space-y-8 p-8">
             <div className="space-y-4">
               <h2 className="text-3xl font-bold text-white">
@@ -77,10 +72,8 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Lado derecho - Formulario */}
           <div className="bg-base-100 backdrop-blur-xl border border-black rounded-2xl shadow-xl p-8 lg:p-10">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Correo Electrónico
@@ -95,7 +88,6 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* Password Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Contraseña
@@ -110,7 +102,6 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* Recordar contraseña */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <input
@@ -130,14 +121,12 @@ export default function LoginPage() {
                 </button>
               </div>
 
-              {/* Error Message */}
               {error && (
                 <div className="bg-red-950/50 border border-red-400/50 text-red-300 px-4 py-3 rounded-lg">
                   {error}
                 </div>
               )}
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
@@ -147,14 +136,12 @@ export default function LoginPage() {
               </button>
             </form>
 
-            {/* Divider */}
             <div className="my-6 flex items-center gap-4">
               <div className="flex-1 bg-gray-600 h-px"></div>
               <span className="text-gray-400 text-sm">o</span>
               <div className="flex-1 bg-gray-600 h-px"></div>
             </div>
 
-            {/* Links */}
             <div className="space-y-4 text-center">
               <p className="text-gray-400">
                 ¿No tienes cuenta?{" "}
@@ -166,7 +153,6 @@ export default function LoginPage() {
                 </Link>
               </p>
 
-              {/* Demo credentials */}
               <div className="bg-gray-900/40 border border-cyan-500/20 rounded-lg p-4">
                 <p className="text-sm text-gray-400 mb-2">
                   Credenciales de demo:

@@ -1,4 +1,3 @@
-// src/layouts/DashboardLayout.tsx
 import { useAuth } from "../hooks/useAuth";
 import { Link, useLocation } from "react-router-dom";
 
@@ -106,7 +105,6 @@ export default function DashboardLayout({
               Proyectos
             </Link>
 
-            {/* Solo para Freelancers */}
             {isFreelancer && (
               <>
                 <Link
@@ -186,17 +184,16 @@ export default function DashboardLayout({
               </>
             )}
 
-            {/* Solo para Clientes */}
             {isClient && (
               <>
-            <Link
-              to="/requirements"
-              className={`w-full text-left px-4 py-3 rounded-lg transition flex items-center gap-2 ${
-                isActive("/requirements")
-                  ? "bg-blue-900 text-white"
-                  : "text-white hover:bg-gray-100"
-              }`}
-            >
+                <Link
+                  to="/requirements"
+                  className={`w-full text-left px-4 py-3 rounded-lg transition flex items-center gap-2 ${
+                    isActive("/requirements")
+                      ? "bg-blue-900 text-white"
+                      : "text-white hover:bg-gray-100"
+                  }`}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -215,9 +212,9 @@ export default function DashboardLayout({
                     <path d="M16 17H8" />
                   </svg>
                   Requerimientos
-              </Link>
-              <Link
-                to="/payments"
+                </Link>
+                <Link
+                  to="/payments"
                   className={`w-full text-left px-4 py-3 rounded-lg transition flex items-center gap-2 ${
                     location.pathname === "/payments"
                       ? "bg-blue-900 text-white"
@@ -295,7 +292,6 @@ export default function DashboardLayout({
           </nav>
         </aside>
 
-        {/* Main Content */}
         <main className="flex-1 p-8 bg-white">{children}</main>
       </div>
     </div>

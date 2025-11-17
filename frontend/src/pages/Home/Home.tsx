@@ -1,10 +1,6 @@
 import { Link } from "react-router-dom";
 import LightRays from "../../components/LightRays";
 
-/**
- * Página principal (Homepage) - Landing publica
- * Navegacion a Login y Register
- */
 export default function Home() {
   return (
     <div className="min-h-screen bg-base-100 relative">
@@ -23,7 +19,6 @@ export default function Home() {
         />
       </div>
 
-      {/* Contenido con z-index superior */}
       <div className="relative z-10">
         <nav className="navbar bg-base-100/50 backdrop-blur-sm shadow-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -71,7 +66,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Features Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
             <div className="p-8 bg-base-200/70 backdrop-blur-sm rounded shadow-md">
               <div className="text-4xl mb-4"></div>
@@ -155,7 +149,6 @@ export default function Home() {
           </div>
         </main>
 
-        {/* Footer */}
         <footer className="footer sm:footer-horizontal bg-base-200/50 backdrop-blur-sm text-neutral-content p-10 mt-20">
           <nav>
             <h6 className="footer-title">Servicios Freelancer</h6>

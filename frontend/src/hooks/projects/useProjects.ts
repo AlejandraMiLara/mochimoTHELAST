@@ -1,6 +1,8 @@
-// src/hooks/useProjects.ts
 import { useState, useEffect } from "react";
-import type { Project, ProjectFormData } from "../../pages/project/project.types";
+import type {
+  Project,
+  ProjectFormData,
+} from "../../pages/project/project.types";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL as string;
 
@@ -16,12 +18,10 @@ export function useProjects(userId: string) {
   const [error, setError] = useState<string | null>(null);
   const [userInvitationCodes, setUserInvitationCodes] = useState<string[]>([]);
 
-  // Cargar proyectos del backend al montar
   useEffect(() => {
     fetchProjects();
   }, []);
 
-  // Obtener todos los proyectos
   const fetchProjects = async () => {
     try {
       setLoading(true);
@@ -40,14 +40,15 @@ export function useProjects(userId: string) {
       const data = await response.json();
       setProjects(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al cargar proyectos");
+      setError(
+        err instanceof Error ? err.message : "Error al cargar proyectos"
+      );
       console.error("Error fetching projects:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Crear proyecto
   const createProject = async (formData: ProjectFormData) => {
     try {
       const { name, description, imageUrl, paymentMode } = formData;
@@ -82,7 +83,6 @@ export function useProjects(userId: string) {
     }
   };
 
-  // Actualizar proyecto
   const updateProject = async (id: string, formData: ProjectFormData) => {
     try {
       const { name, description, imageUrl, paymentMode } = formData;
@@ -117,7 +117,6 @@ export function useProjects(userId: string) {
     }
   };
 
-  // Eliminar proyecto
   const deleteProject = async (id: string) => {
     if (!confirm("¿Estás seguro de que quieres eliminar este proyecto?")) {
       return;
@@ -141,7 +140,6 @@ export function useProjects(userId: string) {
     }
   };
 
-  // Unirse a proyecto (clientes)
   const joinProject = async (invitationCode: string) => {
     try {
       const response = await fetch(`${API_URL}/invitations/join`, {
@@ -159,7 +157,6 @@ export function useProjects(userId: string) {
         setUserInvitationCodes([...userInvitationCodes, invitationCode]);
       }
 
-      // Refrescar lista de proyectos
       await fetchProjects();
     } catch (err) {
       console.error("Error joining project:", err);

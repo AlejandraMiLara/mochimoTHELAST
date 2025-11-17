@@ -1,5 +1,3 @@
-// src/types/task.types.ts
-
 export type TaskStatus = "TODO" | "INPROGRESS" | "DONE";
 
 export interface Task {
@@ -11,7 +9,6 @@ export interface Task {
   projectId: string;
   requirementId: string;
 
-  // Relaciones expandidas (opcional, para mostrar en UI)
   project?: {
     id: string;
     name: string;

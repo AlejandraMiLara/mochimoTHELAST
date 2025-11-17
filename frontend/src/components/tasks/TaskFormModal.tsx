@@ -1,4 +1,3 @@
-// src/components/TaskFormModal.tsx
 "use client";
 import type { TaskFormData, TaskStatus } from "../../pages/tasks/task.types";
 import { TASK_STATUS_CONFIG } from "../../pages/tasks/task.constants";
@@ -28,7 +27,6 @@ export default function TaskFormModal({
 }: TaskFormModalProps) {
   if (!isOpen) return null;
 
-  // Filtrar requerimientos según el proyecto seleccionado
   const filteredRequirements = formData.projectId
     ? requirements.filter((req) => req.projectId === formData.projectId)
     : [];
@@ -43,7 +41,6 @@ export default function TaskFormModal({
         </h3>
 
         <div className="space-y-4">
-          {/* Proyecto */}
           <div>
             <label className="block text-sm font-medium text-white mb-2">
               Proyecto *
@@ -54,11 +51,11 @@ export default function TaskFormModal({
               onChange={(e) => {
                 onChange({
                   projectId: e.target.value,
-                  // Reset requirement cuando cambia el proyecto
+
                   requirementId: "",
                 });
               }}
-              disabled={isEditing} // No permitir cambiar proyecto al editar
+              disabled={isEditing}
             >
               <option className="bg-base-200" value="">
                 Selecciona un proyecto
@@ -80,7 +77,6 @@ export default function TaskFormModal({
             )}
           </div>
 
-          {/* Requerimiento */}
           <div>
             <label className="block text-sm font-medium text-white mb-2">
               Requerimiento *
@@ -121,7 +117,6 @@ export default function TaskFormModal({
             )}
           </div>
 
-          {/* Estado */}
           <div>
             <label className="block text-sm font-medium text-white mb-2">
               Estado *
@@ -145,7 +140,6 @@ export default function TaskFormModal({
             </div>
           </div>
 
-          {/* URL de Imagen */}
           <div>
             <label className="block text-sm font-medium text-white mb-2">
               URL de Imagen (opcional)
@@ -172,7 +166,6 @@ export default function TaskFormModal({
           </div>
         </div>
 
-        {/* Botones */}
         <div className="flex gap-3 mt-6">
           <button
             onClick={onClose}

@@ -1,9 +1,8 @@
-// src/pages/profile/Profile.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import DashboardLayout from "../../layouts/DashBoardLayout";
-import { useProfile } from "../../hooks/profile/useProfile";
+import { useProfile } from "../../hooks/Profile/useProfile";
 
 export default function Profile() {
   const {
@@ -71,9 +70,7 @@ export default function Profile() {
       payload.avatarUrl = avatarTrimmed ? avatarTrimmed : null;
       await saveProfile(payload);
       setProfileMessage("Perfil actualizado correctamente");
-    } catch {
-      /* already handled */
-    }
+    } catch {}
   };
 
   const submitPayment = async (event: React.FormEvent) => {
@@ -82,9 +79,7 @@ export default function Profile() {
     try {
       await savePaymentData(paymentForm);
       setPaymentMessage("Datos de pago guardados");
-    } catch {
-      /* already handled */
-    }
+    } catch {}
   };
 
   return (
@@ -119,14 +114,20 @@ export default function Profile() {
               )}
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-white">{userInfo.email}</h2>
-              <p className="text-sm text-base-content/70">Rol: {userInfo.role}</p>
+              <h2 className="text-xl font-semibold text-white">
+                {userInfo.email}
+              </h2>
+              <p className="text-sm text-base-content/70">
+                Rol: {userInfo.role}
+              </p>
             </div>
           </div>
 
           <form onSubmit={submitProfile} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-white mb-1">Bio</label>
+              <label className="block text-sm font-medium text-white mb-1">
+                Bio
+              </label>
               <textarea
                 className="textarea textarea-bordered w-full bg-gray-900/40 text-white"
                 rows={4}
@@ -170,7 +171,9 @@ export default function Profile() {
 
         {isFreelancer && (
           <section className="bg-base-200 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">Datos de pago</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">
+              Datos de pago
+            </h2>
             <form onSubmit={submitPayment} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
@@ -229,7 +232,9 @@ export default function Profile() {
                   {savingPayment ? "Guardando..." : "Guardar datos de pago"}
                 </button>
                 {paymentMessage && (
-                  <span className="text-sm text-green-300">{paymentMessage}</span>
+                  <span className="text-sm text-green-300">
+                    {paymentMessage}
+                  </span>
                 )}
               </div>
             </form>

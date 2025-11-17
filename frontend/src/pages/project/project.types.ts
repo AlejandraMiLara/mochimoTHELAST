@@ -1,5 +1,3 @@
-// src/types/project.types.ts
-
 export type ProjectStatus =
   | "PENDING" // pendiente de config
   | "REVIEW" // requerimientos en revision

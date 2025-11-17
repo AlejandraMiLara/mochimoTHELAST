@@ -1,4 +1,3 @@
-// src/pages/requirements/Requirements.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -18,7 +17,9 @@ export default function Requirements() {
   const { projectId: projectIdParam } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
 
-  const [selectedProjectId, setSelectedProjectId] = useState(projectIdParam || "");
+  const [selectedProjectId, setSelectedProjectId] = useState(
+    projectIdParam || ""
+  );
   const [showModal, setShowModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -72,9 +73,7 @@ export default function Requirements() {
       await createRequirement(formData.description);
       setShowModal(false);
       resetForm();
-    } catch {
-      /* manejado */
-    }
+    } catch {}
   };
 
   const handleUpdate = async (id: string) => {
@@ -83,27 +82,21 @@ export default function Requirements() {
       setEditingId(null);
       setShowModal(false);
       resetForm();
-    } catch {
-      /* noop */
-    }
+    } catch {}
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("¿Eliminar este requisito?")) return;
     try {
       await deleteRequirement(id);
-    } catch {
-      /* noop */
-    }
+    } catch {}
   };
 
   const handleSubmitForReview = async () => {
     if (!confirm("¿Enviar requisitos a revisión del cliente?")) return;
     try {
       await submitForReview();
-    } catch {
-      /* noop */
-    }
+    } catch {}
   };
 
   const handleReview = async (
@@ -113,9 +106,7 @@ export default function Requirements() {
     try {
       await reviewRequirements(action, reason);
       setShowReviewModal(false);
-    } catch {
-      /* noop */
-    }
+    } catch {}
   };
 
   const resetForm = () => setFormData({ description: "" });
@@ -138,7 +129,9 @@ export default function Requirements() {
     <DashboardLayout>
       <div className="mb-8 space-y-6">
         <header>
-          <h1 className="text-3xl font-bold text-gray-900">Gestión de Requisitos</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Gestión de Requisitos
+          </h1>
           <p className="text-sm text-gray-500 mt-2">
             Crea, envía y aprueba requisitos para mantener alineado el proyecto.
           </p>
@@ -161,9 +154,12 @@ export default function Requirements() {
               />
             </svg>
             <div>
-              <p className="font-semibold">Los requisitos se revisan antes de avanzar</p>
+              <p className="font-semibold">
+                Los requisitos se revisan antes de avanzar
+              </p>
               <p className="text-sm">
-                Una vez enviados a revisión, el cliente puede aprobarlos o solicitar cambios. Solo así podrás avanzar a contratos y tareas.
+                Una vez enviados a revisión, el cliente puede aprobarlos o
+                solicitar cambios. Solo así podrás avanzar a contratos y tareas.
               </p>
             </div>
           </div>
@@ -189,7 +185,9 @@ export default function Requirements() {
             disabled={projectsLoading}
           >
             <option value="">
-              {projectsLoading ? "Cargando proyectos..." : "Selecciona un proyecto"}
+              {projectsLoading
+                ? "Cargando proyectos..."
+                : "Selecciona un proyecto"}
             </option>
             {projects.map((proj) => (
               <option key={proj.id} value={proj.id}>
@@ -209,8 +207,18 @@ export default function Requirements() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 19a9 9 0 1114 0H5z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 19a9 9 0 1114 0H5z"
+                />
               </svg>
               <h3 className="text-xl font-semibold">Selecciona un proyecto</h3>
               <p className="text-sm text-base-content/70 mt-2">

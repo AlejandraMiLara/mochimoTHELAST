@@ -1,4 +1,3 @@
-// src/components/requirements/RequirementModal.tsx
 interface RequirementModalProps {
   isOpen: boolean;
   isEditing: boolean;

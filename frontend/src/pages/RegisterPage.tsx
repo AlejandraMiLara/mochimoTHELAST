@@ -7,10 +7,6 @@ import { useAuth } from "../hooks/useAuth";
 import { UserRole } from "../types";
 import type { UserRole as UserRoleType } from "../types";
 
-/**
- * Página de Registro
- * Conecta con POST /auth/register del backend NestJS
- */
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -78,7 +74,6 @@ export default function RegisterPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start h-full">
-          {/* Lado izquierdo - Informacion */}
           <div className="hidden lg:flex flex-col justify-center space-y-8 p-8">
             <div className="space-y-4">
               <h2 className="text-3xl font-bold text-white">
@@ -112,11 +107,9 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Lado derecho - Formulario */}
           <div className="bg-base-100 backdrop-saturate-200 border border-zinc-950  rounded-2xl shadow-xl p-8 lg:p-10">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Nombre */}
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Nombre
@@ -132,7 +125,6 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                {/* Apellido */}
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Apellido
@@ -149,7 +141,6 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Correo */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Correo Electronico
@@ -166,7 +157,6 @@ export default function RegisterPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Contraseña */}
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Contraseña
@@ -182,7 +172,6 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                {/* Confirmar contraseña */}
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Confirmar Contraseña
@@ -199,7 +188,6 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Rol */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Quiero ser:
@@ -222,7 +210,6 @@ export default function RegisterPage() {
                 </select>
               </div>
 
-              {/* Terminos */}
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
@@ -242,14 +229,12 @@ export default function RegisterPage() {
                 </label>
               </div>
 
-              {/* Error */}
               {error && (
                 <div className="bg-red-950/50 border border-red-400/50 text-red-300 px-4 py-3 rounded-lg">
                   {error}
                 </div>
               )}
 
-              {/* Boton */}
               <button
                 type="submit"
                 disabled={loading}
@@ -259,7 +244,6 @@ export default function RegisterPage() {
               </button>
             </form>
 
-            {/* Link login */}
             <div className="mt-6 text-center text-gray-400">
               ¿Ya tienes cuenta?{" "}
               <a
