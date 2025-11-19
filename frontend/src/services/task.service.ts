@@ -12,6 +12,7 @@ export interface TaskResponse {
   requirement: {
     id: string;
     description: string;
+    status?: string;
   };
   project: {
     id: string;
@@ -26,7 +27,9 @@ export interface UpdateTaskStatusDto {
 export const taskService = {
   getTasksByProject: async (projectId: string): Promise<TaskResponse[]> => {
     const response = await api.get(`/projects/${projectId}/tasks`);
-    return response.data;
+    const allTasks = response.data;
+
+    return allTasks;
   },
 
   updateTaskStatus: async (

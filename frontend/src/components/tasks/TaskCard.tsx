@@ -100,24 +100,25 @@ export default function TaskCard({
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
+              width="24"
+              height="24"
               viewBox="0 0 24 24"
               fill="none"
               stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              className="lucide lucide-circle-ellipsis-icon lucide-circle-ellipsis"
             >
-              <path d="M12 3v6l4-4-4-4" />
-              <path d="M12 21v-6l-4 4 4 4" />
-              <path d="M3 12h6l-4-4-4 4" />
-              <path d="M21 12h-6l4-4 4 4" />
+              <circle cx="12" cy="12" r="10" />
+              <path d="M17 12h.01" />
+              <path d="M12 12h.01" />
+              <path d="M7 12h.01" />
             </svg>
           </label>
           <ul
             tabIndex={0}
-            className="dropdown-content z-10 menu p-2 shadow bg-base-100 rounded-box w-52"
+            className="dropdown-content z-10 menu p-2 shadow bg-base-100 rounded-box w-52 text-white"
           >
             {Object.entries(TASK_STATUS_CONFIG).map(([key, config]) => (
               <li key={key}>

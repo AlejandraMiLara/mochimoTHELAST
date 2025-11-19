@@ -8,15 +8,19 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ProjectService } from 'src/project/project.service';
 import { CreateRequirementDto } from './dto/create-requirement.dto';
 import { UpdateRequirementDto } from './dto/update-requirement.dto';
-import { ReviewRequirementsDto, ReviewAction } from './dto/review-requirements.dto';
+import {
+  ReviewRequirementsDto,
+  ReviewAction,
+} from './dto/review-requirements.dto';
 import { ProjectStatus, RequirementStatus, Role } from '@prisma/client';
-
+import { TaskService } from 'src/task/task.service';
 
 @Injectable()
 export class RequirementService {
   constructor(
     private prisma: PrismaService,
     private projectService: ProjectService,
+    private taskService: TaskService,
   ) {}
 
   async create(freelancerId: string, createDto: CreateRequirementDto) {
@@ -80,9 +84,7 @@ export class RequirementService {
     );
 
     if (project.status !== ProjectStatus.REVIEW) {
-      throw new ForbiddenException(
-        'El proyecto no está en espera de revisión',
-      );
+      throw new ForbiddenException('El proyecto no está en espera de revisión');
     }
 
     if (reviewDto.action === ReviewAction.APPROVE) {
@@ -90,6 +92,9 @@ export class RequirementService {
         where: { projectId, status: RequirementStatus.SUBMITTED },
         data: { status: RequirementStatus.APPROVED },
       });
+
+      await this.taskService.autoGenerateTasks(projectId);
+
       return this.prisma.project.update({
         where: { id: projectId },
         data: { status: ProjectStatus.APPROVED },
@@ -147,7 +152,7 @@ export class RequirementService {
     freelancerId: string,
     requirementId: string,
     updateDto: UpdateRequirementDto,
-    ) {
+  ) {
     await this.checkRequirementOwnership(freelancerId, requirementId);
 
     return this.prisma.requirement.update({

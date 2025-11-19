@@ -179,7 +179,7 @@ export default function Requirements() {
             Selecciona un proyecto
           </label>
           <select
-            className="select select-bordered w-full max-w-xl bg-gray-900/50 text-gray-100"
+            className="select select-bordered w-full max-w-xl bg-base-200 text-gray-100"
             value={selectedProjectId}
             onChange={(e) => handleProjectSelect(e.target.value)}
             disabled={projectsLoading}

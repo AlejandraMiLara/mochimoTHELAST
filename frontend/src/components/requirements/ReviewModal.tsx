@@ -32,16 +32,19 @@ export default function ReviewModal({
   return (
     <div className="modal modal-open">
       <div className="modal-box max-w-2xl">
-        <h3 className="font-bold text-lg mb-4">📋 Revisar Requisitos</h3>
+        <h3 className="font-bold text-lg mb-4 text-white">
+          {" "}
+          Revisar Requisitos
+        </h3>
 
         <div className="py-4 space-y-4">
           <div>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-white mb-4">
               Revisa los {requirements.length} requisitos definidos para el
               proyecto
             </p>
 
-            <div className="space-y-2 max-h-60 overflow-y-auto mb-4">
+            <div className="space-y-2 max-h-60 overflow-y-auto mb-4 text-white">
               {requirements.map((req, index) => (
                 <div key={req.id} className="p-3 bg-base-200 rounded-lg">
                   <p className="font-medium">
@@ -61,7 +64,7 @@ export default function ReviewModal({
                 checked={reviewAction === "APPROVE"}
                 onChange={() => setReviewAction("APPROVE")}
               />
-              <span className="label-text font-medium">
+              <span className="label-text font-medium text-white">
                 ✅ Aprobar todos los requisitos
               </span>
             </label>
@@ -76,7 +79,7 @@ export default function ReviewModal({
                 checked={reviewAction === "REVISION"}
                 onChange={() => setReviewAction("REVISION")}
               />
-              <span className="label-text font-medium">
+              <span className="label-text font-medium text-white">
                 🔄 Solicitar revisión
               </span>
             </label>

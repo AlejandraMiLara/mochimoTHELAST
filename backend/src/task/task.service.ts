@@ -9,7 +9,6 @@ import { RequirementStatus, TaskStatus } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { PrismaTx } from 'src/prisma/types';
 
-
 @Injectable()
 export class TaskService {
   constructor(
@@ -42,28 +41,42 @@ export class TaskService {
         });
       }
     }
-  }
 
+    const tasksCount = await prisma.task.count({
+      where: { projectId },
+    });
+
+    console.log(`Total tasks for project ${projectId}: ${tasksCount}`);
+  }
 
   async findAllForProject(userId: string, projectId: string) {
     await this.projectService.checkProjectAccess(userId, projectId);
 
-    return this.prisma.task.findMany({
+    const tasks = await this.prisma.task.findMany({
       where: { projectId },
       include: {
-        requirement: { 
-          select: { description: true }, 
+        requirement: {
+          select: {
+            id: true,
+            description: true,
+            status: true,
+          },
+        },
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
       },
       orderBy: { createdAt: 'asc' },
     });
+
+    console.log(`Found ${tasks.length} tasks for project ${projectId}`);
+    return tasks;
   }
 
-  async updateStatus(
-    freelancerId: string,
-    taskId: string,
-    status: TaskStatus,
-  ) {
+  async updateStatus(freelancerId: string, taskId: string, status: TaskStatus) {
     const task = await this.prisma.task.findUnique({
       where: { id: taskId },
       include: { project: true },
@@ -77,18 +90,30 @@ export class TaskService {
     return this.prisma.task.update({
       where: { id: taskId },
       data: { status },
+      include: {
+        requirement: {
+          select: {
+            id: true,
+            description: true,
+            status: true,
+          },
+        },
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
   }
 
-  async addTaskImage(
-    freelancerId: string,
-    taskId: string,
-    imageUrl: string,
-  ) {
+  async addTaskImage(freelancerId: string, taskId: string, imageUrl: string) {
     const task = await this.prisma.task.findUnique({
       where: { id: taskId },
       include: { project: true },
     });
+
     if (!task) throw new NotFoundException('Tarea no encontrada');
     if (task.project.ownerId !== freelancerId) {
       throw new ForbiddenException('No tienes permiso para editar esta tarea');
@@ -97,6 +122,21 @@ export class TaskService {
     return this.prisma.task.update({
       where: { id: taskId },
       data: { imageUrl },
+      include: {
+        requirement: {
+          select: {
+            id: true,
+            description: true,
+            status: true,
+          },
+        },
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
   }
 }
