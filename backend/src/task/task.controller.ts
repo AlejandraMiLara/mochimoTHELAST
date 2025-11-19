@@ -20,11 +20,15 @@ import { Role } from '@prisma/client';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import type { JwtPayload } from 'src/auth/decorators/get-user.decorator';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Controller()
 @UseGuards(JwtAuthGuard)
 export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+constructor(
+    private readonly taskService: TaskService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   @Get('projects/:id/tasks')
   findAllForProject(
@@ -49,15 +53,18 @@ export class TaskController {
   @UseGuards(RolesGuard)
   @Roles(Role.FREELANCER)
   @UseInterceptors(FileInterceptor('file'))
-  uploadTaskImage(
+  async uploadTaskImage(
     @GetUser() user: JwtPayload,
     @Param('id') taskId: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
+
     if (!file) {
-      throw new BadRequestException('Se requiere un archivo de imagen');
+      throw new BadRequestException('Se requiere imagen');
     }
-    const imageUrl = file.path;
+
+    const uploadResult = await this.cloudinaryService.uploadImage(file);
+    const imageUrl = uploadResult.secure_url;
 
     return this.taskService.addTaskImage(user.userId, taskId, imageUrl);
   }
