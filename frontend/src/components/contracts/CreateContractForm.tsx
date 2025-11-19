@@ -1,0 +1,92 @@
+import { useState } from 'react';
+import type { CreateContractDto } from '../../services/contract.service';
+
+interface CreateContractFormProps {
+  projectId: string;
+  onSubmit: (data: CreateContractDto) => Promise<void>;
+  onCancel: () => void;
+}
+
+export default function CreateContractForm({ projectId, onSubmit, onCancel }: CreateContractFormProps) {
+  const [price, setPrice] = useState('');
+  const [includesIva, setIncludesIva] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await onSubmit({
+        projectId,
+        price: parseFloat(price),
+        includesIva
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+      <h3 className="text-xl font-bold text-gray-900 mb-4">Crear Nuevo Contrato</h3>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Precio Total del Proyecto
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="0.00"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="includesIva"
+            checked={includesIva}
+            onChange={(e) => setIncludesIva(e.target.checked)}
+            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+          />
+          <label htmlFor="includesIva" className="ml-2 text-sm text-gray-700">
+            El precio incluye IVA
+          </label>
+        </div>
+
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm text-blue-800">
+            <strong>Nota:</strong> El contrato se generará automáticamente con la información del proyecto, 
+            el freelancer y el cliente. Podrás revisarlo antes de enviarlo.
+          </p>
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <button
+            type="submit"
+            disabled={loading || !price}
+            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Creando...' : 'Crear Contrato'}
+          </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition font-medium"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

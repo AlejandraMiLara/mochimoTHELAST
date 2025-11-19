@@ -9,6 +9,10 @@ import Projects from "./pages/project/Projects";
 import Tasks from "./pages/tasks/Tasks";
 import Requirements from "./pages/requirements/Requirements";
 import Profile from "./pages/profile/Profile";
+import Contracts from "./pages/contracts/Contracts";
+import Portfolio from "./pages/portfolio/Portfolio";
+import Payments from "./pages/payments/Payments";
+import PaymentReview from "./pages/payment-review/PaymentReview";
 
 function App() {
   const { isLoading } = useAuth();
@@ -74,6 +78,42 @@ function App() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        ></Route>
+        
+        <Route
+          path="/contracts"
+          element={
+            <ProtectedRoute>
+              <Contracts />
+            </ProtectedRoute>
+          }
+        ></Route>
+        
+        <Route
+          path="/portfolio"
+          element={
+            <ProtectedRoute>
+              <Portfolio />
+            </ProtectedRoute>
+          }
+        ></Route>
+        
+        <Route
+          path="/payments"
+          element={
+            <ProtectedRoute>
+              <Payments />
+            </ProtectedRoute>
+          }
+        ></Route>
+        
+        <Route
+          path="/payment-review"
+          element={
+            <ProtectedRoute>
+              <PaymentReview />
             </ProtectedRoute>
           }
         ></Route>

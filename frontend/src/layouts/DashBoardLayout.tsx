@@ -181,6 +181,30 @@ export default function DashboardLayout({
                   </svg>
                   Portafolio
                 </Link>
+                <Link
+                  to="/payment-review"
+                  className={`w-full text-left px-4 py-3 rounded-lg transition flex items-center gap-2 ${
+                    location.pathname === "/payment-review"
+                      ? "bg-blue-900 text-white"
+                      : "text-white hover:bg-gray-100"
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect width="20" height="14" x="2" y="5" rx="2" />
+                    <line x1="2" x2="22" y1="10" y2="10" />
+                  </svg>
+                  Revisión de Pagos
+                </Link>
               </>
             )}
 

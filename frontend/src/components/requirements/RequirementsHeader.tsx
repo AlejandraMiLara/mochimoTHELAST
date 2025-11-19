@@ -23,6 +23,13 @@ export default function RequirementsHeader({
   onSubmitClick,
   onReviewClick,
 }: RequirementsHeaderProps) {
+  console.log('RequirementsHeader:', {
+    projectStatus: project.status,
+    isFreelancer,
+    canEditRequirements,
+    canSubmitForReview,
+    canReview
+  });
   return (
     <div className="mb-6">
       <div className="flex justify-between items-start mb-4">

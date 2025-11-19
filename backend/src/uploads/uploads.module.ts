@@ -18,12 +18,12 @@ import { extname } from 'path';
         },
       }),
       fileFilter: (req, file, cb) => {
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
-          // Rechazar archivo
-          return cb(new Error('Solo se permiten archivos de imagen'), false);
+        const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (allowedMimes.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(new Error('Solo se permiten archivos de imagen (jpg, jpeg, png, gif, webp)'), false);
         }
-        // Aceptar archivo
-        cb(null, true);
       },
     }),
   ],
