@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   ValidationPipe,
+  UseInterceptors,
+  UploadedFile
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -19,20 +21,39 @@ import { Role } from '@prisma/client';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import type { JwtPayload } from 'src/auth/decorators/get-user.decorator';
 import { UpdateVisibilityDto } from './dto/update-visibility.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Controller('projects')
 @UseGuards(JwtAuthGuard)
 export class ProjectController {
-  constructor(private readonly projectService: ProjectService) {}
+constructor(
+    private readonly projectService: ProjectService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   @Post()
   @UseGuards(RolesGuard)
   @Roles(Role.FREELANCER)
-  create(
+  @UseInterceptors(FileInterceptor('file'))
+  async create(
     @Body(ValidationPipe) createProjectDto: CreateProjectDto,
     @GetUser() user: JwtPayload,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.projectService.create(user.userId, createProjectDto);
+    let imageUrl = createProjectDto.imageUrl;
+
+    if (file) {
+      const uploadResult = await this.cloudinaryService.uploadImage(file);
+      imageUrl = uploadResult.secure_url;
+    }
+
+    const projectData = {
+      ...createProjectDto,
+      imageUrl: imageUrl,
+    };
+
+    return this.projectService.create(user.userId, projectData);
   }
 
   @Get()

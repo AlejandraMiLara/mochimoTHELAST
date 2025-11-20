@@ -49,29 +49,41 @@ export function useProjects(userId: string) {
     }
   };
 
-  const createProject = async (formData: ProjectFormData) => {
+  const createProject = async (formData: ProjectFormData, file?: File) => {
     try {
-      const { name, description, imageUrl, paymentMode } = formData;
+      const { name, description, imageUrl, paymentMode, isPublic, status } = formData;
+      
+      const formDataPayload = new FormData();
+      
+      formDataPayload.append("name", name);
+      formDataPayload.append("description", description);
+      
       const paymentModeMapped =
         paymentMode === "FULLADVANCE"
           ? "UPFRONT"
           : paymentMode === "FULLCOMPLETE"
           ? "ONFINISH"
-          : paymentMode; // HALFHUP pasa tal cual
-      const payload: any = { name, description, paymentMode };
-      payload.paymentMode = paymentModeMapped;
-      if (imageUrl && imageUrl.trim() !== "") {
-        payload.imageUrl = imageUrl.trim();
+          : paymentMode;
+      
+      formDataPayload.append("paymentMode", paymentModeMapped);
+      formDataPayload.append("isPublic", String(isPublic));
+      formDataPayload.append("status", status);
+
+      if (file) {
+        formDataPayload.append("file", file);
+      } else if (imageUrl && imageUrl.trim() !== "") {
+        formDataPayload.append("imageUrl", imageUrl.trim());
       }
+
       const response = await fetch(`${API_URL}/projects`, {
         method: "POST",
-        headers: getAuthHeaders(),
         credentials: "include",
-        body: JSON.stringify(payload),
+        body: formDataPayload,
       });
 
       if (!response.ok) {
-        throw new Error("Error al crear proyecto");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al crear proyecto");
       }
 
       const newProject = await response.json();
@@ -85,18 +97,20 @@ export function useProjects(userId: string) {
 
   const updateProject = async (id: string, formData: ProjectFormData) => {
     try {
-      const { name, description, imageUrl, paymentMode } = formData;
+      const { name, description, imageUrl, paymentMode, isPublic } = formData;
       const paymentModeMapped =
         paymentMode === "FULLADVANCE"
           ? "UPFRONT"
           : paymentMode === "FULLCOMPLETE"
           ? "ONFINISH"
           : paymentMode;
-      const payload: any = { name, description, paymentMode };
-      payload.paymentMode = paymentModeMapped;
+          
+      const payload: any = { name, description, paymentMode: paymentModeMapped, isPublic };
+      
       if (imageUrl && imageUrl.trim() !== "") {
         payload.imageUrl = imageUrl.trim();
       }
+      
       const response = await fetch(`${API_URL}/projects/${id}`, {
         method: "PATCH",
         headers: getAuthHeaders(),

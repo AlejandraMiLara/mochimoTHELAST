@@ -36,9 +36,9 @@ export default function Projects() {
 
   const filteredProjects = projects;
 
-  const handleCreate = () => {
+  const handleCreate = (file?: File) => {
     if (!isFreelancer) return;
-    createProject(formData);
+    createProject(formData, file);
     resetForm();
   };
 
@@ -56,13 +56,13 @@ export default function Projects() {
   const openEditModal = (project: any) => {
     if (!isFreelancer) return;
     setEditingId(project.id);
-    // Mapear el modo de pago del backend a las opciones del select del frontend
     const paymentModeForForm =
       project.paymentMode === "UPFRONT"
         ? "FULLADVANCE"
         : project.paymentMode === "ONFINISH"
         ? "FULLCOMPLETE"
         : project.paymentMode;
+    
     setFormData({
       name: project.name,
       description: project.description,
@@ -197,8 +197,8 @@ export default function Projects() {
           isEditing={!!editingId}
           formData={formData}
           onClose={resetForm}
-          onSubmit={() =>
-            editingId ? handleUpdate(editingId) : handleCreate()
+          onSubmit={(file) =>
+            editingId ? handleUpdate(editingId) : handleCreate(file)
           }
           onChange={handleFormChange}
         />
