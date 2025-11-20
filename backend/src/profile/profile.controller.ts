@@ -2,12 +2,18 @@ import {
   Controller,
   Get,
   Put,
+  Post,
   Body,
   UseGuards,
   ValidationPipe,
-  Param
+  Param,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -21,7 +27,10 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
 export class ProfileController {
-  constructor(private profileService: ProfileService) {}
+constructor(
+    private profileService: ProfileService,
+    private cloudinaryService: CloudinaryService
+  ) {}
 
   @Get('me')
   async getMyProfile(
@@ -68,6 +77,22 @@ export class ProfileController {
       user.userId,
       projectId,
     );
+  }
+
+  @Post('avatar')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadAvatar(
+    @GetUser() user: JwtPayload,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Se requiere imagen');
+    }
+
+    const uploadResult = await this.cloudinaryService.uploadImage(file);
+    const avatarUrl = uploadResult.secure_url;
+
+    return this.profileService.upsertProfile(user.userId, { avatarUrl });
   }
 
 }

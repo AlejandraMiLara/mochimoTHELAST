@@ -7,6 +7,7 @@ import {
   updateMyPaymentData,
   type ProfileDetails,
   type PaymentDataPayload,
+  uploadAvatar as uploadAvatarService
 } from "../../services/profile.service";
 
 interface UseProfileResult {
@@ -22,6 +23,8 @@ interface UseProfileResult {
   refreshPayment: () => Promise<void>;
   saveProfile: (data: ProfileDetails) => Promise<void>;
   savePaymentData: (data: PaymentDataPayload) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<void>;
+  uploadingAvatar: boolean;
 }
 
 const emptyProfile: ProfileDetails = {
@@ -38,6 +41,7 @@ export function useProfile(): UseProfileResult {
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPayment, setSavingPayment] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const refreshProfile = useCallback(async () => {
     setLoadingProfile(true);
@@ -134,6 +138,25 @@ export function useProfile(): UseProfileResult {
     []
   );
 
+  const uploadAvatar = useCallback(async (file: File) => {
+    setUploadingAvatar(true);
+    setError(null);
+    try {
+      const updatedProfile = await uploadAvatarService(file);
+      
+      setProfile((prev) => ({
+        ...prev,
+        avatarUrl: updatedProfile.avatarUrl ?? prev.avatarUrl
+      }));
+    } catch (err: any) {
+      setError(err?.message ?? "Error al subir el avatar");
+      throw err;
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }, []);
+
+
   return {
     userInfo: user,
     profile,
@@ -147,5 +170,7 @@ export function useProfile(): UseProfileResult {
     refreshPayment,
     saveProfile,
     savePaymentData,
+    uploadAvatar,
+    uploadingAvatar,
   };
 }

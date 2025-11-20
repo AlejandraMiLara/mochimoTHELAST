@@ -38,3 +38,15 @@ export const getFreelancerPaymentData = async (projectId: string) => {
   );
   return response.data;
 };
+
+export const uploadAvatar = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await api.post('/profile/avatar', formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};

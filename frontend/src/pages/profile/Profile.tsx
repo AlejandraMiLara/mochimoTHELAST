@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import DashboardLayout from "../../layouts/DashBoardLayout";
 import { useProfile } from "../../hooks/Profile/useProfile";
 
@@ -16,10 +16,17 @@ export default function Profile() {
     error,
     saveProfile,
     savePaymentData,
+    uploadAvatar, 
+    uploadingAvatar,
   } = useProfile();
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Estado local para el formulario de texto (Bio)
   const [profileForm, setProfileForm] = useState(profile);
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
+
+  // Estado local para el formulario de pagos
   const [paymentForm, setPaymentForm] = useState(
     paymentData ?? {
       bankName: "",
@@ -29,6 +36,7 @@ export default function Profile() {
   );
   const [paymentMessage, setPaymentMessage] = useState<string | null>(null);
 
+  // Sincronizar estado local cuando carga el perfil remoto
   useEffect(() => {
     setProfileForm({
       bio: profile.bio ?? "",
@@ -36,6 +44,7 @@ export default function Profile() {
     });
   }, [profile]);
 
+  // Sincronizar estado local cuando cargan datos de pago
   useEffect(() => {
     setPaymentForm(
       paymentData ?? {
@@ -46,10 +55,32 @@ export default function Profile() {
     );
   }, [paymentData]);
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("La imagen es muy pesada (Máximo 5MB)");
+      return;
+    }
+
+    try {
+      await uploadAvatar(file);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
   if (!userInfo) {
     return (
       <DashboardLayout>
-        <div className="p-8 text-white">Cargando perfil...</div>
+        <div className="p-8 text-white flex items-center justify-center">
+          <span className="loading loading-spinner loading-lg text-cyan-400"></span>
+        </div>
       </DashboardLayout>
     );
   }
@@ -60,16 +91,15 @@ export default function Profile() {
     event.preventDefault();
     setProfileMessage(null);
     try {
-      const payload: { bio?: string | null; avatarUrl?: string | null } = {};
+      const payload: { bio?: string | null } = {};
       const bioTrimmed = profileForm.bio?.trim();
-      const avatarTrimmed = profileForm.avatarUrl?.trim();
-
+      
       if (bioTrimmed !== undefined) {
         payload.bio = bioTrimmed;
       }
-      payload.avatarUrl = avatarTrimmed ? avatarTrimmed : null;
+      
       await saveProfile(payload);
-      setProfileMessage("Perfil actualizado correctamente");
+      setProfileMessage("Información actualizada correctamente");
     } catch {}
   };
 
@@ -93,95 +123,134 @@ export default function Profile() {
         </header>
 
         {error && (
-          <div className="alert alert-error">
+          <div className="alert alert-error bg-red-900/50 border-red-500 text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             <span>{error}</span>
           </div>
         )}
 
-        <section className="bg-base-200 rounded-lg shadow p-6">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-full bg-base-300 flex items-center justify-center overflow-hidden">
-              {profile.avatarUrl ? (
-                <img
-                  src={profile.avatarUrl}
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-2xl text-white">
-                  {userInfo.email.charAt(0).toUpperCase()}
-                </span>
-              )}
+        <section className="bg-base-200 rounded-lg shadow p-6 border border-gray-700">
+          <div className="flex items-center gap-6 mb-8">
+            
+            <div className="relative group">
+              <div className="w-24 h-24 rounded-full bg-base-300 flex items-center justify-center overflow-hidden border-4 border-base-100 shadow-xl relative">
+                {uploadingAvatar ? (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+                    <span className="loading loading-spinner text-cyan-400"></span>
+                  </div>
+                ) : null}
+                
+                {profile.avatarUrl ? (
+                  <img
+                    src={profile.avatarUrl}
+                    alt="Avatar"
+                    className={`w-full h-full object-cover transition-opacity ${uploadingAvatar ? 'opacity-50' : 'opacity-100'}`}
+                  />
+                ) : (
+                  <span className="text-4xl text-white font-bold">
+                    {userInfo.email.charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </div>
+
+              <button
+                type="button"
+                disabled={uploadingAvatar}
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-0 right-0 bg-cyan-500 p-2 rounded-full text-white hover:bg-cyan-400 transition-all shadow-lg hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
+                title="Cambiar foto de perfil"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              </button>
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
             </div>
+
             <div>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-2xl font-bold text-white">
                 {userInfo.email}
               </h2>
-              <p className="text-sm text-base-content/70">
-                Rol: {userInfo.role}
-              </p>
+              <div className="mt-1">
+                <span className="badge badge-primary badge-outline text-xs font-bold uppercase tracking-wider">
+                  {userInfo.role}
+                </span>
+              </div>
             </div>
           </div>
 
-          <form onSubmit={submitProfile} className="space-y-4">
+          <form onSubmit={submitProfile} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-white mb-1">
-                Bio
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Sobre mí (Bio)
               </label>
               <textarea
-                className="textarea textarea-bordered w-full bg-gray-900/40 text-white"
-                rows={4}
-                placeholder="Cuéntanos sobre tu experiencia"
+                className="textarea textarea-bordered w-full bg-gray-900/50 text-gray-100 focus:ring-2 focus:ring-cyan-500 focus:border-transparent min-h-[120px]"
+                placeholder="Cuéntanos sobre tu experiencia, habilidades o lo que haces..."
                 value={profileForm.bio ?? ""}
                 onChange={(e) =>
                   setProfileForm({ ...profileForm, bio: e.target.value })
                 }
                 disabled={loadingProfile}
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Esta información será visible en tu perfil público.
+              </p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-white mb-1">
-                Avatar URL
-              </label>
-              <input
-                type="url"
-                className="input input-bordered w-full bg-gray-900/40 text-white"
-                placeholder="https://miportafolio.com/avatar.jpg"
-                value={profileForm.avatarUrl ?? ""}
-                onChange={(e) =>
-                  setProfileForm({ ...profileForm, avatarUrl: e.target.value })
-                }
-                disabled={loadingProfile}
-              />
-            </div>
-            <div className="flex items-center gap-3">
+
+            <div className="flex items-center gap-4 pt-2">
               <button
                 type="submit"
-                className="btn bg-cyan-400 border-cyan-400 text-white"
+                className="btn btn-primary bg-cyan-600 hover:bg-cyan-500 border-none text-white px-6"
                 disabled={savingProfile}
               >
-                {savingProfile ? "Guardando..." : "Guardar perfil"}
+                {savingProfile ? (
+                  <>
+                    <span className="loading loading-spinner loading-xs"></span>
+                    Guardando...
+                  </>
+                ) : (
+                  "Guardar cambios"
+                )}
               </button>
               {profileMessage && (
-                <span className="text-sm text-green-300">{profileMessage}</span>
+                <span className="text-sm text-green-400 font-medium animate-pulse">
+                  ✓ {profileMessage}
+                </span>
               )}
             </div>
           </form>
         </section>
 
         {isFreelancer && (
-          <section className="bg-base-200 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Datos de pago
-            </h2>
-            <form onSubmit={submitPayment} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">
+          <section className="bg-base-200 rounded-lg shadow p-6 border border-gray-700">
+            <div className="flex items-center gap-2 mb-6 border-b border-gray-700 pb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-cyan-400">
+                <rect width="20" height="14" x="2" y="5" rx="2" />
+                <line x1="2" x2="22" y1="10" y2="10" />
+              </svg>
+              <h2 className="text-xl font-bold text-white">
+                Datos Bancarios
+              </h2>
+            </div>
+            
+            <form onSubmit={submitPayment} className="grid gap-6 md:grid-cols-2">
+              <div className="col-span-2 md:col-span-1">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Banco
                 </label>
                 <input
                   type="text"
-                  className="input input-bordered w-full bg-gray-900/40 text-white"
+                  placeholder="Ej. BBVA, Santander..."
+                  className="input input-bordered w-full bg-gray-900/50 text-white focus:ring-2 focus:ring-cyan-500"
                   value={paymentForm.bankName}
                   onChange={(e) =>
                     setPaymentForm({ ...paymentForm, bankName: e.target.value })
@@ -189,13 +258,15 @@ export default function Profile() {
                   disabled={loadingPayment}
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">
+              
+              <div className="col-span-2 md:col-span-1">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Titular de la cuenta
                 </label>
                 <input
                   type="text"
-                  className="input input-bordered w-full bg-gray-900/40 text-white"
+                  placeholder="Nombre completo del titular"
+                  className="input input-bordered w-full bg-gray-900/50 text-white focus:ring-2 focus:ring-cyan-500"
                   value={paymentForm.accountHolder}
                   onChange={(e) =>
                     setPaymentForm({
@@ -206,13 +277,15 @@ export default function Profile() {
                   disabled={loadingPayment}
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">
+              
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Número de cuenta / CLABE
                 </label>
                 <input
                   type="text"
-                  className="input input-bordered w-full bg-gray-900/40 text-white"
+                  placeholder="18 dígitos para CLABE o número de tarjeta"
+                  className="input input-bordered w-full bg-gray-900/50 text-white focus:ring-2 focus:ring-cyan-500 font-mono tracking-wide"
                   value={paymentForm.accountNumber}
                   onChange={(e) =>
                     setPaymentForm({
@@ -222,18 +295,29 @@ export default function Profile() {
                   }
                   disabled={loadingPayment}
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Estos datos se compartirán con tus clientes para recibir pagos.
+                </p>
               </div>
-              <div className="flex items-center gap-3">
+
+              <div className="col-span-2 flex items-center gap-4 pt-2">
                 <button
                   type="submit"
-                  className="btn bg-cyan-400 border-cyan-400 text-white"
+                  className="btn btn-primary bg-cyan-600 hover:bg-cyan-500 border-none text-white px-6"
                   disabled={savingPayment}
                 >
-                  {savingPayment ? "Guardando..." : "Guardar datos de pago"}
+                  {savingPayment ? (
+                    <>
+                      <span className="loading loading-spinner loading-xs"></span>
+                      Guardando...
+                    </>
+                  ) : (
+                    "Guardar datos bancarios"
+                  )}
                 </button>
                 {paymentMessage && (
-                  <span className="text-sm text-green-300">
-                    {paymentMessage}
+                  <span className="text-sm text-green-400 font-medium animate-pulse">
+                    ✓ {paymentMessage}
                   </span>
                 )}
               </div>
