@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PaymentService } from './payment.service';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service'; // 👈 1. Importar
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -24,13 +25,16 @@ import { ReviewProofDto } from './dto/review-proof.dto';
 @Controller()
 @UseGuards(JwtAuthGuard)
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(
+    private readonly paymentService: PaymentService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   @Post('projects/:id/upload-proof')
   @UseGuards(RolesGuard)
   @Roles(Role.CLIENT)
   @UseInterceptors(FileInterceptor('file'))
-  uploadProof(
+  async uploadProof(
     @GetUser() user: JwtPayload,
     @Param('id') projectId: string,
     @UploadedFile() file: Express.Multer.File,
@@ -39,7 +43,8 @@ export class PaymentController {
       throw new BadRequestException('Se requiere un archivo de imagen');
     }
 
-    const imageUrl = file.path; 
+    const uploadResult = await this.cloudinaryService.uploadImage(file);
+    const imageUrl = uploadResult.secure_url; 
 
     return this.paymentService.uploadProof(user.userId, projectId, imageUrl);
   }

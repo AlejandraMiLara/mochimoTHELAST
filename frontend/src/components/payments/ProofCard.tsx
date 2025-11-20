@@ -20,7 +20,6 @@ const statusLabels = {
 };
 
 export default function ProofCard({ proof, isFreelancer, onApprove, onRequestRevision }: ProofCardProps) {
-  const API_URL = import.meta.env.VITE_API_BASE_URL as string;
   
   return (
     <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
@@ -44,13 +43,13 @@ export default function ProofCard({ proof, isFreelancer, onApprove, onRequestRev
 
       <div className="mb-4">
         <a 
-          href={`${API_URL}/${proof.imageUrl}`}
+          href={proof.imageUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="block"
         >
           <img 
-            src={`${API_URL}/${proof.imageUrl}`}
+            src={proof.imageUrl}
             alt="Comprobante de pago"
             className="w-full max-h-96 object-contain rounded-lg border border-gray-200 hover:border-blue-500 transition cursor-pointer"
           />

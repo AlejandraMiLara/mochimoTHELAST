@@ -13,6 +13,12 @@ export default function UploadProofForm({ onSubmit, onCancel, loading }: UploadP
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        alert("El archivo es demasiado grande (Máximo 5MB)");
+        e.target.value = "";
+        return;
+      }
+
       setFile(selectedFile);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -53,7 +59,7 @@ export default function UploadProofForm({ onSubmit, onCancel, loading }: UploadP
             <img 
               src={preview} 
               alt="Preview" 
-              className="max-h-64 mx-auto rounded-lg"
+              className="max-h-64 mx-auto rounded-lg shadow-sm"
             />
           </div>
         )}
@@ -69,9 +75,14 @@ export default function UploadProofForm({ onSubmit, onCancel, loading }: UploadP
           <button
             type="submit"
             disabled={loading || !file}
-            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed flex justify-center items-center"
           >
-            {loading ? 'Subiendo...' : 'Subir Comprobante'}
+            {loading ? (
+              <>
+                <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>
+                Subiendo...
+              </>
+            ) : 'Subir Comprobante'}
           </button>
           <button
             type="button"

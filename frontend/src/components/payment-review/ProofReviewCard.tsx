@@ -19,7 +19,6 @@ const statusLabels = {
 };
 
 export default function ProofReviewCard({ proof, onApprove, onRequestRevision }: ProofReviewCardProps) {
-  const API_URL = import.meta.env.VITE_API_BASE_URL as string;
   const isPending = proof.status === 'PENDING';
   
   return (
@@ -44,13 +43,13 @@ export default function ProofReviewCard({ proof, onApprove, onRequestRevision }:
 
       <div className="mb-4">
         <a 
-          href={`${API_URL}/${proof.imageUrl}`}
+          href={proof.imageUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="block"
         >
           <img 
-            src={`${API_URL}/${proof.imageUrl}`}
+            src={proof.imageUrl}
             alt="Comprobante de pago"
             className="w-full max-h-96 object-contain rounded-lg border-2 border-gray-300 hover:border-blue-500 transition cursor-pointer"
           />
