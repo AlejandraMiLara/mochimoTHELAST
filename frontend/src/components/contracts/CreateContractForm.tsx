@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import type { CreateContractDto } from '../../services/contract.service';
+import { useState } from "react";
+import type { CreateContractDto } from "../../services/contract.service";
 
 interface CreateContractFormProps {
   projectId: string;
@@ -7,8 +7,12 @@ interface CreateContractFormProps {
   onCancel: () => void;
 }
 
-export default function CreateContractForm({ projectId, onSubmit, onCancel }: CreateContractFormProps) {
-  const [price, setPrice] = useState('');
+export default function CreateContractForm({
+  projectId,
+  onSubmit,
+  onCancel,
+}: CreateContractFormProps) {
+  const [price, setPrice] = useState("");
   const [includesIva, setIncludesIva] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +23,7 @@ export default function CreateContractForm({ projectId, onSubmit, onCancel }: Cr
       await onSubmit({
         projectId,
         price: parseFloat(price),
-        includesIva
+        includesIva,
       });
     } finally {
       setLoading(false);
@@ -27,23 +31,27 @@ export default function CreateContractForm({ projectId, onSubmit, onCancel }: Cr
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-      <h3 className="text-xl font-bold text-gray-900 mb-4">Crear Nuevo Contrato</h3>
-      
+    <div className="bg-base-200 rounded-lg shadow-md p-6 border border-gray-200">
+      <h3 className="text-xl font-bold text-white mb-4">
+        Crear Nuevo Contrato
+      </h3>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-white mb-2">
             Precio Total del Proyecto
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white">
+              $
+            </span>
             <input
               type="number"
               step="0.01"
               min="0"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-8 pr-4 py-2 border text-white border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="0.00"
               required
             />
@@ -58,15 +66,16 @@ export default function CreateContractForm({ projectId, onSubmit, onCancel }: Cr
             onChange={(e) => setIncludesIva(e.target.checked)}
             className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
-          <label htmlFor="includesIva" className="ml-2 text-sm text-gray-700">
+          <label htmlFor="includesIva" className="ml-2 text-sm text-white">
             El precio incluye IVA
           </label>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
-            <strong>Nota:</strong> El contrato se generará automáticamente con la información del proyecto, 
-            el freelancer y el cliente. Podrás revisarlo antes de enviarlo.
+        <div className="bg-base-200 border border-base-200 rounded-lg p-4">
+          <p className="text-sm text-white">
+            <strong>Nota:</strong> El contrato se generará automáticamente con
+            la información del proyecto, el freelancer y el cliente. Podrás
+            revisarlo antes de enviarlo.
           </p>
         </div>
 
@@ -74,9 +83,9 @@ export default function CreateContractForm({ projectId, onSubmit, onCancel }: Cr
           <button
             type="submit"
             disabled={loading || !price}
-            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="flex-1 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-500 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {loading ? 'Creando...' : 'Crear Contrato'}
+            {loading ? "Creando..." : "Crear Contrato"}
           </button>
           <button
             type="button"

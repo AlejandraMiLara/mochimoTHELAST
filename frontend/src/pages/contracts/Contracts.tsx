@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import DashboardLayout from "../../layouts/DashBoardLayout";
 import { useAuth } from "../../hooks/useAuth";
 import { useContracts } from "../../hooks/useContracts";
@@ -16,10 +16,16 @@ interface Project {
 
 export default function Contracts() {
   const { user } = useAuth();
-  const { projects, loading: projectsLoading } = useProjects(user?.id || '');
-  const { createContract, submitContract, getContractForProject, reviewContract, loading } = useContracts();
-  
-  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+  const { projects, loading: projectsLoading } = useProjects(user?.id || "");
+  const {
+    createContract,
+    submitContract,
+    getContractForProject,
+    reviewContract,
+    loading,
+  } = useContracts();
+
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [contract, setContract] = useState<Contract | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showRevisionModal, setShowRevisionModal] = useState(false);
@@ -29,11 +35,24 @@ export default function Contracts() {
   const isFreelancer = String(user?.role) === "FREELANCER";
 
   // Filtrar proyectos según el rol
-  const availableProjects = projects.filter(p => {
+  const availableProjects = projects.filter((p) => {
     if (isFreelancer) {
-      return p.status === 'APPROVED' || p.status === 'CONTRACT_REVIEW' || p.status === 'CONTRACT_APPROVED' || p.status === 'INPROGRESS' || p.status === 'PAYMENT' || p.status === 'COMPLETED';
+      return (
+        p.status === "APPROVED" ||
+        p.status === "CONTRACT_REVIEW" ||
+        p.status === "CONTRACT_APPROVED" ||
+        p.status === "INPROGRESS" ||
+        p.status === "PAYMENT" ||
+        p.status === "COMPLETED"
+      );
     } else {
-      return p.status === 'CONTRACT_REVIEW' || p.status === 'CONTRACT_APPROVED' || p.status === 'INPROGRESS' || p.status === 'PAYMENT' || p.status === 'COMPLETED';
+      return (
+        p.status === "CONTRACT_REVIEW" ||
+        p.status === "CONTRACT_APPROVED" ||
+        p.status === "INPROGRESS" ||
+        p.status === "PAYMENT" ||
+        p.status === "COMPLETED"
+      );
     }
   });
 
@@ -50,7 +69,7 @@ export default function Contracts() {
       setContract(data);
     } catch (err: any) {
       setContract(null);
-      if (!err.message.includes('404')) {
+      if (!err.message.includes("404")) {
         setError(err.message);
       }
     }
@@ -62,7 +81,7 @@ export default function Contracts() {
       const newContract = await createContract(data);
       setContract(newContract);
       setShowCreateForm(false);
-      setSuccess('Contrato creado exitosamente');
+      setSuccess("Contrato creado exitosamente");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       setError(err.message);
@@ -75,7 +94,7 @@ export default function Contracts() {
       setError(null);
       await submitContract(contract.id);
       await loadContract();
-      setSuccess('Contrato enviado al cliente');
+      setSuccess("Contrato enviado al cliente");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       setError(err.message);
@@ -86,9 +105,9 @@ export default function Contracts() {
     if (!contract) return;
     try {
       setError(null);
-      await reviewContract(contract.id, { action: 'APPROVE' });
+      await reviewContract(contract.id, { action: "APPROVE" });
       await loadContract();
-      setSuccess('Contrato aprobado exitosamente');
+      setSuccess("Contrato aprobado exitosamente");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       setError(err.message);
@@ -99,9 +118,9 @@ export default function Contracts() {
     if (!contract) return;
     try {
       setError(null);
-      await reviewContract(contract.id, { action: 'REQUEST_REVISION', reason });
+      await reviewContract(contract.id, { action: "REQUEST_REVISION", reason });
       await loadContract();
-      setSuccess('Solicitud de revisión enviada');
+      setSuccess("Solicitud de revisión enviada");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       setError(err.message);
@@ -113,10 +132,9 @@ export default function Contracts() {
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-900">Contratos</h2>
         <p className="text-gray-600 mt-1">
-          {isFreelancer 
-            ? "Gestiona tus contratos como freelancer" 
-            : "Gestiona tus contratos como cliente"
-          }
+          {isFreelancer
+            ? "Gestiona tus contratos como freelancer"
+            : "Gestiona tus contratos como cliente"}
         </p>
       </div>
 
@@ -132,8 +150,8 @@ export default function Contracts() {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+      <div className="bg-base-200 rounded-lg shadow-md p-6 mb-6 text-white">
+        <label className="block text-sm font-medium text-white mb-2">
           Selecciona un Proyecto
         </label>
         <select
@@ -143,11 +161,11 @@ export default function Contracts() {
             setShowCreateForm(false);
             setContract(null);
           }}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="select select-bordered w-full max-w-md px-4 py-3 border border-white rounded-lg bg-base-200 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
           disabled={projectsLoading}
         >
-          <option value="">-- Selecciona un proyecto --</option>
-          {availableProjects.map(project => (
+          <option value="">Selecciona un proyecto</option>
+          {availableProjects.map((project) => (
             <option key={project.id} value={project.id}>
               {project.name}
             </option>
@@ -171,17 +189,38 @@ export default function Contracts() {
               onRequestRevision={() => setShowRevisionModal(true)}
             />
           ) : isFreelancer && !showCreateForm ? (
-            <div className="bg-white rounded-lg shadow p-12 text-center">
-              <div className="text-6xl mb-4">📄</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <div className="bg-base-200 rounded-lg shadow p-12 text-center">
+              <div className="text-6xl mb-4 flex justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="50"
+                  height="50"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  className="lucide lucide-file-spreadsheet-icon lucide-file-spreadsheet"
+                >
+                  <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
+                  <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                  <path d="M8 13h2" />
+                  <path d="M14 13h2" />
+                  <path d="M8 17h2" />
+                  <path d="M14 17h2" />
+                </svg>
+              </div>
+
+              <h3 className="text-xl font-semibold text-white mb-2">
                 No hay contrato para este proyecto
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-slate-600 mb-6">
                 Crea un contrato para comenzar con el proyecto
               </p>
               <button
                 onClick={() => setShowCreateForm(true)}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+                className="bg-cyan-400 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
               >
                 Crear Contrato
               </button>
@@ -207,12 +246,27 @@ export default function Contracts() {
       )}
 
       {!selectedProjectId && (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <div className="text-6xl mb-4">📋</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <div className="bg-base-200 rounded-lg shadow p-12 text-center">
+          <div className="text-6xl mb-4 flex justify-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="50"
+              height="50"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              className="lucide lucide-folder-icon lucide-folder"
+            >
+              <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-white mb-2">
             Selecciona un Proyecto
           </h3>
-          <p className="text-gray-600">
+          <p className="text-slate-600">
             Elige un proyecto de la lista para ver o gestionar su contrato
           </p>
         </div>
