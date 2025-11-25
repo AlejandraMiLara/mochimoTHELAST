@@ -20,12 +20,13 @@ export interface ReviewProofDto {
 export const paymentService = {
   async uploadProof(projectId: string, file: File): Promise<PaymentProof> {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', file, file.name);
     
     const response = await api.post(`/projects/${projectId}/upload-proof`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      timeout: 30000,
     });
     return response.data;
   },

@@ -17,8 +17,17 @@ export default function UploadProofForm({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        alert("El archivo es demasiado grande (Máximo 5MB)");
+      // Validar tamaño (10MB para Cloudinary)
+      if (selectedFile.size > 10 * 1024 * 1024) {
+        alert("El archivo es demasiado grande (Máximo 10MB)");
+        e.target.value = "";
+        return;
+      }
+
+      // Validar tipo de archivo
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(selectedFile.type)) {
+        alert("Tipo de archivo no válido. Solo se permiten: JPG, PNG, GIF, WEBP");
         e.target.value = "";
         return;
       }
@@ -27,6 +36,11 @@ export default function UploadProofForm({
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
+      };
+      reader.onerror = () => {
+        alert("Error al leer el archivo. Por favor, intenta con otro archivo.");
+        setFile(null);
+        setPreview("");
       };
       reader.readAsDataURL(selectedFile);
     }
@@ -52,7 +66,7 @@ export default function UploadProofForm({
           </label>
           <input
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
             onChange={handleFileChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
@@ -66,6 +80,22 @@ export default function UploadProofForm({
               src={preview}
               alt="Preview"
               className="max-h-64 mx-auto rounded-lg shadow-sm"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const parent = target.parentElement;
+                if (parent) {
+                  const errorDiv = document.createElement('div');
+                  errorDiv.className = 'flex flex-col items-center justify-center h-32 bg-gray-100 rounded-lg';
+                  errorDiv.innerHTML = `
+                    <svg class="w-8 h-8 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <p class="text-gray-500 text-xs">Error en vista previa</p>
+                  `;
+                  parent.appendChild(errorDiv);
+                }
+              }}
             />
           </div>
         )}
@@ -74,6 +104,8 @@ export default function UploadProofForm({
           <p className="text-sm text-white">
             <strong>Nota:</strong> Asegúrate de que el comprobante sea legible y
             contenga toda la información necesaria del pago realizado.
+            <br />
+            <strong>Formatos aceptados:</strong> JPG, PNG, GIF, WEBP (máximo 10MB)
           </p>
         </div>
 

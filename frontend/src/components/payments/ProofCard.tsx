@@ -52,6 +52,26 @@ export default function ProofCard({ proof, isFreelancer, onApprove, onRequestRev
             src={proof.imageUrl}
             alt="Comprobante de pago"
             className="w-full max-h-96 object-contain rounded-lg border border-gray-200 hover:border-blue-500 transition cursor-pointer"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const parent = target.parentElement;
+              if (parent) {
+                parent.innerHTML = `
+                  <div class="flex flex-col items-center justify-center h-48 bg-gray-100 rounded-lg border border-gray-200">
+                    <svg class="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <p class="text-gray-500 text-sm">Error al cargar la imagen</p>
+                    <a href="${proof.imageUrl}" target="_blank" class="text-blue-500 hover:text-blue-700 text-sm mt-1">Ver imagen original</a>
+                  </div>
+                `;
+              }
+            }}
+            onLoad={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'block';
+            }}
           />
         </a>
         <p className="text-sm text-gray-500 mt-2 text-center">
