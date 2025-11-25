@@ -39,6 +39,7 @@ export class PaymentController {
     @Param('id') projectId: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    
     if (!file) {
       throw new BadRequestException('Se requiere un archivo de imagen');
     }

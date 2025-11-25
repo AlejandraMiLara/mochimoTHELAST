@@ -39,5 +39,6 @@ export const paymentService = {
   async reviewProof(proofId: string, data: ReviewProofDto): Promise<{ message: string }> {
     const response = await api.post(`/proofs/${proofId}/review`, data);
     return response.data;
-  }
+  },
+
 };

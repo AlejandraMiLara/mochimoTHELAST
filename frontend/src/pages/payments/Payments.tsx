@@ -19,6 +19,7 @@ export default function Payments() {
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [selectedProofId, setSelectedProofId] = useState<string>("");
   const [showRevisionModal, setShowRevisionModal] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -26,10 +27,7 @@ export default function Payments() {
 
   // Filtrar proyectos que están en estado PAYMENT
   const availableProjects = projects.filter(
-    (p) =>
-      p.status === "PAYMENT" ||
-      p.status === "INPROGRESS" ||
-      p.status === "COMPLETED"
+    (p) => p.status === "PAYMENT"
   );
 
   useEffect(() => {
@@ -95,6 +93,10 @@ export default function Payments() {
     setShowRevisionModal(true);
   };
 
+
+
+
+
   return (
     <DashboardLayout>
       <div className="mb-8">
@@ -143,16 +145,7 @@ export default function Payments() {
 
       {selectedProjectId && (
         <div className="space-y-6">
-          {isClient && !showUploadForm && (
-            <div className="flex justify-end">
-              <button
-                onClick={() => setShowUploadForm(true)}
-                className="bg-cyan-400 text-white px-6 py-3 rounded-lg hover:bg-cyan-500 transition font-medium"
-              >
-                Subir Comprobante
-              </button>
-            </div>
-          )}
+
 
           {showUploadForm && (
             <UploadProofForm
@@ -161,6 +154,8 @@ export default function Payments() {
               loading={loading}
             />
           )}
+
+
 
           {loading && !showUploadForm ? (
             <div className="bg-white rounded-lg shadow p-12 text-center">
@@ -179,6 +174,7 @@ export default function Payments() {
                   isFreelancer={!isClient}
                   onApprove={() => handleApproveProof(proof.id)}
                   onRequestRevision={() => openRevisionModal(proof.id)}
+                  onResubmit={() => setShowUploadForm(true)}
                 />
               ))}
             </div>

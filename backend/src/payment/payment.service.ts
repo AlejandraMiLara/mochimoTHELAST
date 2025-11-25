@@ -31,6 +31,7 @@ export class PaymentService {
       clientId,
       projectId,
     );
+    
     if (project.status !== ProjectStatus.PAYMENT) {
       throw new ForbiddenException(
         'El proyecto no está actualmente en espera de pago',

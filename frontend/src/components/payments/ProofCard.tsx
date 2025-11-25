@@ -5,6 +5,7 @@ interface ProofCardProps {
   isFreelancer: boolean;
   onApprove?: () => void;
   onRequestRevision?: () => void;
+  onResubmit?: () => void;
 }
 
 const statusColors = {
@@ -19,7 +20,7 @@ const statusLabels = {
   REVISION: 'Requiere Revisión'
 };
 
-export default function ProofCard({ proof, isFreelancer, onApprove, onRequestRevision }: ProofCardProps) {
+export default function ProofCard({ proof, isFreelancer, onApprove, onRequestRevision, onResubmit }: ProofCardProps) {
   
   return (
     <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
@@ -102,6 +103,17 @@ export default function ProofCard({ proof, isFreelancer, onApprove, onRequestRev
               Solicitar Revisión
             </button>
           </>
+        )}
+
+
+
+        {!isFreelancer && proof.status === 'REVISION' && (
+          <button
+            onClick={onResubmit}
+            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-medium"
+          >
+            Subir Nuevo Comprobante
+          </button>
         )}
 
         {proof.status === 'APPROVED' && (
