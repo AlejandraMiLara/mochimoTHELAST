@@ -67,12 +67,28 @@ export const useContracts = () => {
     }
   };
 
+  const updateContract = async (contractId: string, data: CreateContractDto): Promise<Contract> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const contract = await contractService.updateContract(contractId, data);
+      return contract;
+    } catch (err: any) {
+      const message = err.response?.data?.message || 'Error al actualizar contrato';
+      setError(message);
+      throw new Error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     error,
     createContract,
     submitContract,
     getContractForProject,
-    reviewContract
+    reviewContract,
+    updateContract
   };
 };

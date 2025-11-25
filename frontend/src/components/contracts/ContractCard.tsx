@@ -6,6 +6,7 @@ interface ContractCardProps {
   onSubmit?: () => void;
   onApprove?: () => void;
   onRequestRevision?: () => void;
+  onEdit?: () => void;
 }
 
 const statusColors = {
@@ -28,6 +29,7 @@ export default function ContractCard({
   onSubmit,
   onApprove,
   onRequestRevision,
+  onEdit,
 }: ContractCardProps) {
   return (
     <div className="card bg-base-100 shadow-xl border border-gray-200">
@@ -90,10 +92,22 @@ export default function ContractCard({
 
         {/* ACCIONES */}
         <div className="card-actions justify-end mt-4 w-full">
-          {/* Freelancer → enviar */}
+          {/* Freelancer → borrador */}
           {isFreelancer && contract.status === "DRAFT" && (
-            <button onClick={onSubmit} className="btn btn-primary w-full">
-              Enviar a Cliente
+            <div className="flex w-full gap-2">
+              <button onClick={onEdit} className="btn btn-secondary flex-1">
+                Editar
+              </button>
+              <button onClick={onSubmit} className="btn btn-primary flex-1">
+                Enviar a Cliente
+              </button>
+            </div>
+          )}
+
+          {/* Freelancer → revisión */}
+          {isFreelancer && contract.status === "REVISION" && (
+            <button onClick={onEdit} className="btn btn-warning w-full">
+              Editar y Corregir
             </button>
           )}
 

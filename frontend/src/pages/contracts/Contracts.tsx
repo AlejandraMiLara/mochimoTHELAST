@@ -22,12 +22,14 @@ export default function Contracts() {
     submitContract,
     getContractForProject,
     reviewContract,
+    updateContract,
     loading,
   } = useContracts();
 
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [contract, setContract] = useState<Contract | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [showRevisionModal, setShowRevisionModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -78,10 +80,17 @@ export default function Contracts() {
   const handleCreateContract = async (data: any) => {
     try {
       setError(null);
-      const newContract = await createContract(data);
-      setContract(newContract);
+      if (isEditing && contract) {
+        const updatedContract = await updateContract(contract.id, data);
+        setContract(updatedContract);
+        setSuccess("Contrato actualizado exitosamente");
+      } else {
+        const newContract = await createContract(data);
+        setContract(newContract);
+        setSuccess("Contrato creado exitosamente");
+      }
       setShowCreateForm(false);
-      setSuccess("Contrato creado exitosamente");
+      setIsEditing(false);
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       setError(err.message);
@@ -127,6 +136,16 @@ export default function Contracts() {
     }
   };
 
+  const handleEditContract = () => {
+    console.log('Editando contrato:', contract);
+    console.log('Estado antes - isEditing:', isEditing, 'showCreateForm:', showCreateForm);
+    setIsEditing(true);
+    setShowCreateForm(true);
+    console.log('Estado después - isEditing: true, showCreateForm: true');
+  };
+
+
+
   return (
     <DashboardLayout>
       <div className="mb-8">
@@ -159,6 +178,7 @@ export default function Contracts() {
           onChange={(e) => {
             setSelectedProjectId(e.target.value);
             setShowCreateForm(false);
+            setIsEditing(false);
             setContract(null);
           }}
           className="select select-bordered w-full max-w-md px-4 py-3 border border-white rounded-lg bg-base-200 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
@@ -187,8 +207,9 @@ export default function Contracts() {
               onSubmit={handleSubmitContract}
               onApprove={handleApproveContract}
               onRequestRevision={() => setShowRevisionModal(true)}
+              onEdit={handleEditContract}
             />
-          ) : isFreelancer && !showCreateForm ? (
+          ) : isFreelancer && !showCreateForm && !contract ? (
             <div className="bg-base-200 rounded-lg shadow p-12 text-center">
               <div className="text-6xl mb-4 flex justify-center">
                 <svg
@@ -225,13 +246,26 @@ export default function Contracts() {
                 Crear Contrato
               </button>
             </div>
-          ) : showCreateForm ? (
+          ) : null}
+
+          {showCreateForm && (
             <CreateContractForm
               projectId={selectedProjectId}
               onSubmit={handleCreateContract}
-              onCancel={() => setShowCreateForm(false)}
+              onCancel={() => {
+                setShowCreateForm(false);
+                setIsEditing(false);
+              }}
+              initialData={isEditing && contract ? {
+                price: contract.price,
+                includesIva: contract.includesIva,
+                content: contract.content
+              } : undefined}
+              isEditing={isEditing}
             />
-          ) : (
+          )}
+
+          {!contract && !showCreateForm && (
             <div className="bg-white rounded-lg shadow p-12 text-center">
               <div className="text-6xl mb-4">⏳</div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">

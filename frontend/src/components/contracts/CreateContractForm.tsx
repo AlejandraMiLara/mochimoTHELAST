@@ -5,15 +5,24 @@ interface CreateContractFormProps {
   projectId: string;
   onSubmit: (data: CreateContractDto) => Promise<void>;
   onCancel: () => void;
+  initialData?: {
+    price: number;
+    includesIva: boolean;
+    content?: string;
+  };
+  isEditing?: boolean;
 }
 
 export default function CreateContractForm({
   projectId,
   onSubmit,
   onCancel,
+  initialData,
+  isEditing = false,
 }: CreateContractFormProps) {
-  const [price, setPrice] = useState("");
-  const [includesIva, setIncludesIva] = useState(false);
+  const [price, setPrice] = useState(initialData?.price?.toString() || "");
+  const [includesIva, setIncludesIva] = useState(initialData?.includesIva || false);
+  const [content, setContent] = useState(initialData?.content || "");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,6 +33,7 @@ export default function CreateContractForm({
         projectId,
         price: parseFloat(price),
         includesIva,
+        content: content.trim() || undefined,
       });
     } finally {
       setLoading(false);
@@ -33,7 +43,7 @@ export default function CreateContractForm({
   return (
     <div className="bg-base-200 rounded-lg shadow-md p-6 border border-gray-200">
       <h3 className="text-xl font-bold text-white mb-4">
-        Crear Nuevo Contrato
+        {isEditing ? 'Editar Contrato' : 'Crear Nuevo Contrato'}
       </h3>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -71,6 +81,19 @@ export default function CreateContractForm({
           </label>
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            Contenido del Contrato (Opcional)
+          </label>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="w-full px-3 py-2 border text-white border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            rows={8}
+            placeholder="Deja vacío para generar automáticamente o escribe tu propio contenido..."
+          />
+        </div>
+
         <div className="bg-base-200 border border-base-200 rounded-lg p-4">
           <p className="text-sm text-white">
             <strong>Nota:</strong> El contrato se generará automáticamente con
@@ -85,7 +108,7 @@ export default function CreateContractForm({
             disabled={loading || !price}
             className="flex-1 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-500 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {loading ? "Creando..." : "Crear Contrato"}
+            {loading ? (isEditing ? "Actualizando..." : "Creando...") : (isEditing ? "Actualizar Contrato" : "Crear Contrato")}
           </button>
           <button
             type="button"

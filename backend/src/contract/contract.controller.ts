@@ -63,4 +63,15 @@ export class ContractController {
   ) {
     return this.contractService.review(user.userId, contractId, reviewDto);
   }
+
+  @Post('contracts/:id/update')
+  @UseGuards(RolesGuard)
+  @Roles(Role.FREELANCER)
+  updateContract(
+    @GetUser() user: JwtPayload,
+    @Param('id') contractId: string,
+    @Body(ValidationPipe) updateDto: CreateContractDto,
+  ) {
+    return this.contractService.updateContract(user.userId, contractId, updateDto);
+  }
 }

@@ -64,10 +64,32 @@ export class ContractService {
     const clientName = client?.client.firstName ?? '[Cliente Pendiente]';
     const freelancerName = freelancer?.firstName ?? '[Freelancer]';
 
-    const content = `Contrato de servicios: ${project.name}.
-Freelancer: ${freelancerName}.
-Cliente: ${clientName}.
-Precio acordado: ${createDto.price} (${createDto.includesIva ? 'IVA incluido' : 'más IVA'}).`;
+    // Obtener requerimientos aprobados del proyecto
+    const requirements = await this.prisma.requirement.findMany({
+      where: {
+        projectId: project.id,
+        status: 'APPROVED'
+      },
+      orderBy: { createdAt: 'asc' }
+    });
+
+    const requirementsList = requirements.length > 0 
+      ? requirements.map((req, index) => `${index + 1}. ${req.description}`).join('\n')
+      : 'No hay requerimientos específicos definidos.';
+
+    const content = createDto.content || `CONTRATO DE SERVICIOS: ${project.name}
+
+FREELANCER: ${freelancerName}
+CLIENTE: ${clientName}
+PRECIO ACORDADO: $${createDto.price} ${createDto.includesIva ? '(IVA incluido)' : '(más IVA)'}
+
+REQUERIMIENTOS DEL PROYECTO:
+${requirementsList}
+
+TÉRMINOS Y CONDICIONES:
+- El freelancer se compromete a cumplir con todos los requerimientos listados.
+- El cliente se compromete a realizar el pago según lo acordado.
+- Cualquier cambio adicional será negociado por separado.`;
 
     const contract = await this.prisma.contract.create({
       data: {
@@ -202,5 +224,77 @@ Precio acordado: ${createDto.price} (${createDto.includesIva ? 'IVA incluido' : 
       );
     }
     return contract;
+  }
+
+  async updateContract(
+    freelancerId: string,
+    contractId: string,
+    updateDto: CreateContractDto,
+  ) {
+    const contract = await this.prisma.contract.findUnique({
+      where: { id: contractId },
+      include: { project: true },
+    });
+
+    if (!contract || contract.project.ownerId !== freelancerId) {
+      throw new NotFoundException('Contrato no encontrado o no te pertenece');
+    }
+
+    // Solo se puede editar si está en DRAFT o REVISION
+    if (contract.status !== ContractStatus.DRAFT && contract.status !== ContractStatus.REVISION) {
+      throw new ForbiddenException('No se puede editar un contrato que ya fue enviado o aprobado');
+    }
+
+    const client = await this.prisma.projectClient.findFirst({
+      where: { projectId: contract.projectId },
+      include: { client: true },
+    });
+
+    const freelancer = await this.prisma.user.findUnique({
+      where: { id: freelancerId },
+    });
+
+    const clientName = client?.client.firstName ?? '[Cliente Pendiente]';
+    const freelancerName = freelancer?.firstName ?? '[Freelancer]';
+
+    // Obtener requerimientos aprobados del proyecto
+    const requirements = await this.prisma.requirement.findMany({
+      where: {
+        projectId: contract.projectId,
+        status: 'APPROVED'
+      },
+      orderBy: { createdAt: 'asc' }
+    });
+
+    const requirementsList = requirements.length > 0 
+      ? requirements.map((req, index) => `${index + 1}. ${req.description}`).join('\n')
+      : 'No hay requerimientos específicos definidos.';
+
+    const content = updateDto.content || `CONTRATO DE SERVICIOS: ${contract.project.name}
+
+FREELANCER: ${freelancerName}
+CLIENTE: ${clientName}
+PRECIO ACORDADO: $${updateDto.price} ${updateDto.includesIva ? '(IVA incluido)' : '(más IVA)'}
+
+REQUERIMIENTOS DEL PROYECTO:
+${requirementsList}
+
+TÉRMINOS Y CONDICIONES:
+- El freelancer se compromete a cumplir con todos los requerimientos listados.
+- El cliente se compromete a realizar el pago según lo acordado.
+- Cualquier cambio adicional será negociado por separado.`;
+
+    const updatedContract = await this.prisma.contract.update({
+      where: { id: contractId },
+      data: {
+        price: updateDto.price,
+        includesIva: updateDto.includesIva,
+        content,
+        status: ContractStatus.DRAFT, // Vuelve a borrador
+        revisionReason: null, // Limpia la razón de revisión
+      },
+    });
+
+    return updatedContract;
   }
 }

@@ -16,6 +16,7 @@ export interface CreateContractDto {
   projectId: string;
   price: number;
   includesIva: boolean;
+  content?: string;
 }
 
 export interface ReviewContractDto {
@@ -41,6 +42,11 @@ export const contractService = {
 
   async reviewContract(contractId: string, data: ReviewContractDto): Promise<{ message: string }> {
     const response = await api.post(`/contracts/${contractId}/review`, data);
+    return response.data;
+  },
+
+  async updateContract(contractId: string, data: CreateContractDto): Promise<Contract> {
+    const response = await api.post(`/contracts/${contractId}/update`, data);
     return response.data;
   }
 };

@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsNumber, Min } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, Min, IsOptional, IsString } from 'class-validator';
 
 export class CreateContractDto {
   @IsNotEmpty()
@@ -10,4 +10,8 @@ export class CreateContractDto {
 
   @IsBoolean()
   includesIva: boolean;
+
+  @IsOptional()
+  @IsString()
+  content?: string;
 }
