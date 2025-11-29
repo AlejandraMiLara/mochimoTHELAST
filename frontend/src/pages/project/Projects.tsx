@@ -42,9 +42,9 @@ export default function Projects() {
     resetForm();
   };
 
-  const handleUpdate = (id: string) => {
+  const handleUpdate = (id: string, file?: File) => {
     if (!isFreelancer) return;
-    updateProject(id, formData);
+    updateProject(id, formData, file);
     resetForm();
   };
 
@@ -198,7 +198,7 @@ export default function Projects() {
           formData={formData}
           onClose={resetForm}
           onSubmit={(file) =>
-            editingId ? handleUpdate(editingId) : handleCreate(file)
+            editingId ? handleUpdate(editingId, file) : handleCreate(file)
           }
           onChange={handleFormChange}
         />
