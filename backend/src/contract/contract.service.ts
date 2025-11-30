@@ -77,7 +77,7 @@ export class ContractService {
       ? requirements.map((req, index) => `${index + 1}. ${req.description}`).join('\n')
       : 'No hay requerimientos específicos definidos.';
 
-    const content = `CONTRATO DE SERVICIOS: ${project.name}
+    const content = createDto.content || `CONTRATO DE SERVICIOS: ${project.name}
 
 FREELANCER: ${freelancerName}
 CLIENTE: ${clientName}
@@ -270,7 +270,7 @@ TÉRMINOS Y CONDICIONES:
       ? requirements.map((req, index) => `${index + 1}. ${req.description}`).join('\n')
       : 'No hay requerimientos específicos definidos.';
 
-    const content = `CONTRATO DE SERVICIOS: ${contract.project.name}
+    const content = updateDto.content || `CONTRATO DE SERVICIOS: ${contract.project.name}
 
 FREELANCER: ${freelancerName}
 CLIENTE: ${clientName}
@@ -290,8 +290,8 @@ TÉRMINOS Y CONDICIONES:
         price: updateDto.price,
         includesIva: updateDto.includesIva,
         content,
-        status: ContractStatus.DRAFT, // Vuelve a borrador
-        revisionReason: null, // Limpia la razón de revisión
+        status: ContractStatus.DRAFT,
+        revisionReason: null,
       },
     });
 
