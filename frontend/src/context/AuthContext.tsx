@@ -88,11 +88,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   /**
    * FUNCIÓN 4: Cerrar Sesión
    * Llama al endpoint de logout (que borra la cookie)
-   * y limpia el estado global.
    */
   const handleLogout = async () => {
-    await logout(); // El backend borra la cookie
-    setUser(null); // Borramos al usuario del estado
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Error al cerrar sesión en servidor", error);
+    } finally {
+      window.location.href = "/login";
+    }
   };
 
   // Prepara el valor que se pasará a los componentes hijos

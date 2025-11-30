@@ -22,7 +22,7 @@ export default function Portfolio() {
     } else {
       setLoading(false);
     }
-  }, [currentUserId]); // Dependencia simplificada
+  }, [currentUserId]);
 
   const loadPortfolio = async (id: string) => {
     try {
@@ -90,10 +90,8 @@ export default function Portfolio() {
     <DashboardLayout>
       <div className="max-w-6xl mx-auto space-y-8 p-4">
         
-        {/* Header con Botón de Compartir */}
         <div className="bg-white rounded-lg shadow-md p-8 flex flex-col md:flex-row items-start gap-8 border-t-4 border-cyan-500 relative">
            
-           {/* Avatar */}
            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg shrink-0 ring-2 ring-cyan-100 mx-auto md:mx-0">
               {freelancer.profile?.avatarUrl ? (
                 <img 
@@ -108,7 +106,6 @@ export default function Portfolio() {
               )}
            </div>
 
-           {/* Info del Freelancer */}
            <div className="text-center md:text-left flex-1 w-full">
               <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                 <div>
@@ -116,7 +113,6 @@ export default function Portfolio() {
                     <p className="text-cyan-600 font-medium mb-4">{freelancer.email}</p>
                 </div>
 
-                {/* 👇 BOTÓN DE COMPARTIR */}
                 <button 
                   onClick={handleShare}
                   className={`btn btn-sm gap-2 transition-all duration-300 ${copied ? 'btn-success text-white' : 'btn-outline text-gray-600 hover:bg-gray-100'}`}
@@ -143,7 +139,6 @@ export default function Portfolio() {
            </div>
         </div>
 
-        {/* Proyectos */}
         <div>
           <h2 className="text-2xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-3">Proyectos Destacados</h2>
           
