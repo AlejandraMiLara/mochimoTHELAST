@@ -5,7 +5,6 @@ import {
   Body,
   Param,
   UseGuards,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ContractService } from './contract.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -27,7 +26,7 @@ export class ContractController {
   @Roles(Role.FREELANCER)
   create(
     @GetUser() user: JwtPayload,
-    @Body(ValidationPipe) createDto: CreateContractDto,
+    @Body() createDto: CreateContractDto,
   ) {
     return this.contractService.create(user.userId, createDto);
   }
@@ -59,7 +58,7 @@ export class ContractController {
   review(
     @GetUser() user: JwtPayload,
     @Param('id') contractId: string,
-    @Body(ValidationPipe) reviewDto: ReviewContractDto,
+    @Body() reviewDto: ReviewContractDto,
   ) {
     return this.contractService.review(user.userId, contractId, reviewDto);
   }
@@ -70,7 +69,7 @@ export class ContractController {
   updateContract(
     @GetUser() user: JwtPayload,
     @Param('id') contractId: string,
-    @Body(ValidationPipe) updateDto: CreateContractDto,
+    @Body() updateDto: CreateContractDto,
   ) {
     return this.contractService.updateContract(user.userId, contractId, updateDto);
   }
