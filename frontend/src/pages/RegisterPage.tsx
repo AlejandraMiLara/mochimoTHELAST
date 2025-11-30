@@ -55,6 +55,8 @@ export default function RegisterPage() {
         email: formData.email,
         password: formData.password,
         role: formData.role,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
       });
       navigate("/login");
     } catch (err) {
