@@ -45,20 +45,17 @@ export default function ProjectDetail() {
     <DashboardLayout>
       <div className="max-w-6xl mx-auto space-y-6 p-4">
         
-        {/* Botón de regreso */}
         <div>
           <Link 
             to={`/portfolio/${project.owner.id}`} 
             className="btn btn-ghost btn-sm gap-2 text-gray-600 hover:bg-gray-200 normal-case font-normal"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-            Volver al portafolio de {project.owner.email}
+            Volver al portafolio de {project.owner.firstName} {project.owner.lastName}
           </Link>
         </div>
 
-        {/* Tarjeta Principal (Encabezado del Proyecto) */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden border-t-4 border-cyan-500">
-          {/* Imagen de portada (contenida dentro de la tarjeta) */}
           {project.imageUrl && (
             <div className="h-64 md:h-80 w-full relative group bg-gray-100">
               <img 
@@ -107,10 +104,8 @@ export default function ProjectDetail() {
           </div>
         </div>
 
-        {/* Grid de Contenido (2 Columnas) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* Columna Izquierda: Galería de Evidencias (Ocupa 2 espacios) */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
@@ -147,7 +142,6 @@ export default function ProjectDetail() {
             </div>
           </div>
 
-          {/* Columna Derecha: Requerimientos (Ocupa 1 espacio) */}
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-6">
               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">

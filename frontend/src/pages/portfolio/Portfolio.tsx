@@ -1,34 +1,33 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth"; // 👈 Importamos useAuth
+import { useAuth } from "../../hooks/useAuth";
 import { portfolioService, type Portfolio as PortfolioType } from "../../services/portfolio.service";
 import DashboardLayout from "../../layouts/DashBoardLayout";
 
 export default function Portfolio() {
-  const { userId: paramId } = useParams(); // ID de la URL
-  const { user } = useAuth(); // Usuario logueado (si existe)
+  const { userId: paramId } = useParams();
+  const { user } = useAuth();
   
   const [portfolio, setPortfolio] = useState<PortfolioType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  const [copied, setCopied] = useState(false);
+
+  const currentUserId = paramId || user?.userId || (user as any)?.id;
 
   useEffect(() => {
-    // Lógica para decidir qué ID usar
-    const targetId = paramId || user?.userId || (user as any)?.id;
-
-    if (targetId) {
-      loadPortfolio(targetId);
+    if (currentUserId) {
+      loadPortfolio(currentUserId);
     } else {
-      // 🛑 FIX: Si no hay ID ni usuario logueado, detenemos la carga
       setLoading(false);
-      // Opcional: Redirigir al login o mostrar mensaje
     }
-  }, [paramId, user]); // Escuchamos cambios en URL y Usuario
+  }, [currentUserId]); // Dependencia simplificada
 
   const loadPortfolio = async (id: string) => {
     try {
       setLoading(true);
-      setError(null); // Limpiar errores previos
+      setError(null);
       const data = await portfolioService.getPortfolio(id);
       setPortfolio(data);
     } catch (err) {
@@ -37,6 +36,17 @@ export default function Portfolio() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleShare = () => {
+    if (!currentUserId) return;
+    
+    const url = `${window.location.origin}/portfolio/${currentUserId}`;
+    
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   if (loading) {
@@ -49,7 +59,6 @@ export default function Portfolio() {
     );
   }
 
-  // Si hubo error o no se cargó nada (porque no había ID)
   if (error || !portfolio) {
     return (
       <DashboardLayout>
@@ -60,7 +69,7 @@ export default function Portfolio() {
           </h1>
           <p className="text-gray-600 max-w-md mx-auto">
             {!paramId 
-              ? "Para ver un portafolio, necesitas usar un enlace específico (ej. /portfolio/123) o iniciar sesión como Freelancer."
+              ? "Para ver un portafolio, necesitas usar un enlace específico o iniciar sesión."
               : "Es posible que el enlace sea incorrecto o el usuario no tenga un perfil público."}
           </p>
           
@@ -75,16 +84,17 @@ export default function Portfolio() {
   }
 
   const { freelancer, projects } = portfolio;
-  // Usamos safe navigation para evitar errores si profile es null
   const fullName = `${freelancer.firstName || ''} ${freelancer.lastName || ''}`.trim() || freelancer.email;
 
   return (
     <DashboardLayout>
       <div className="max-w-6xl mx-auto space-y-8 p-4">
         
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-8 flex flex-col md:flex-row items-center gap-8 border-t-4 border-cyan-500">
-           <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg shrink-0 ring-2 ring-cyan-100">
+        {/* Header con Botón de Compartir */}
+        <div className="bg-white rounded-lg shadow-md p-8 flex flex-col md:flex-row items-start gap-8 border-t-4 border-cyan-500 relative">
+           
+           {/* Avatar */}
+           <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg shrink-0 ring-2 ring-cyan-100 mx-auto md:mx-0">
               {freelancer.profile?.avatarUrl ? (
                 <img 
                   src={freelancer.profile.avatarUrl}
@@ -97,10 +107,35 @@ export default function Portfolio() {
                 </div>
               )}
            </div>
-           <div className="text-center md:text-left flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-1">{fullName}</h1>
-              <p className="text-cyan-600 font-medium mb-4">{freelancer.email}</p>
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+
+           {/* Info del Freelancer */}
+           <div className="text-center md:text-left flex-1 w-full">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-1">{fullName}</h1>
+                    <p className="text-cyan-600 font-medium mb-4">{freelancer.email}</p>
+                </div>
+
+                {/* 👇 BOTÓN DE COMPARTIR */}
+                <button 
+                  onClick={handleShare}
+                  className={`btn btn-sm gap-2 transition-all duration-300 ${copied ? 'btn-success text-white' : 'btn-outline text-gray-600 hover:bg-gray-100'}`}
+                >
+                  {copied ? (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      ¡Enlace Copiado!
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/></svg>
+                      Compartir Perfil
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mt-2">
                 <p className="text-gray-600 leading-relaxed italic">
                   {freelancer.profile?.bio || "Este freelancer aún no ha agregado una biografía."}
                 </p>
