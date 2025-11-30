@@ -1,14 +1,43 @@
-import { useAuth } from "../../hooks/useAuth";
-import { usePortfolio } from "../../hooks/usePortfolio";
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth"; // 👈 Importamos useAuth
+import { portfolioService, type Portfolio as PortfolioType } from "../../services/portfolio.service";
 import DashboardLayout from "../../layouts/DashBoardLayout";
 
 export default function Portfolio() {
-  const { user } = useAuth();
-  console.log('User object:', user);
-  const userId = user?.userId || user?.id || null;
-  const { portfolio, loading, error } = usePortfolio(userId);
+  const { userId: paramId } = useParams(); // ID de la URL
+  const { user } = useAuth(); // Usuario logueado (si existe)
+  
+  const [portfolio, setPortfolio] = useState<PortfolioType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const API_URL = import.meta.env.VITE_API_BASE_URL as string;
+  useEffect(() => {
+    // Lógica para decidir qué ID usar
+    const targetId = paramId || user?.userId || (user as any)?.id;
+
+    if (targetId) {
+      loadPortfolio(targetId);
+    } else {
+      // 🛑 FIX: Si no hay ID ni usuario logueado, detenemos la carga
+      setLoading(false);
+      // Opcional: Redirigir al login o mostrar mensaje
+    }
+  }, [paramId, user]); // Escuchamos cambios en URL y Usuario
+
+  const loadPortfolio = async (id: string) => {
+    try {
+      setLoading(true);
+      setError(null); // Limpiar errores previos
+      const data = await portfolioService.getPortfolio(id);
+      setPortfolio(data);
+    } catch (err) {
+      console.error(err);
+      setError("No se pudo cargar el portafolio. El usuario no existe o es privado.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -20,120 +49,115 @@ export default function Portfolio() {
     );
   }
 
-  if (error) {
+  // Si hubo error o no se cargó nada (porque no había ID)
+  if (error || !portfolio) {
     return (
       <DashboardLayout>
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          {error}
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (!portfolio) {
-    return (
-      <DashboardLayout>
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <div className="text-6xl mb-4">💼</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            No se encontró el portafolio
-          </h3>
-          <p className="text-gray-600 mt-2">
-            Asegúrate de estar logueado como FREELANCER
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4">
+          <div className="text-6xl mb-4">🔍</div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">
+            {error || "Portafolio no especificado"}
+          </h1>
+          <p className="text-gray-600 max-w-md mx-auto">
+            {!paramId 
+              ? "Para ver un portafolio, necesitas usar un enlace específico (ej. /portfolio/123) o iniciar sesión como Freelancer."
+              : "Es posible que el enlace sea incorrecto o el usuario no tenga un perfil público."}
           </p>
-          <p className="text-sm text-gray-500 mt-2">
-            User ID: {userId || 'No disponible'}
-          </p>
-          <p className="text-sm text-gray-500">
-            Role: {user?.role || 'No disponible'}
-          </p>
+          
+          {!user && (
+             <Link to="/login" className="btn btn-primary mt-6 text-white">
+               Iniciar Sesión
+             </Link>
+          )}
         </div>
       </DashboardLayout>
     );
   }
 
   const { freelancer, projects } = portfolio;
-  const fullName = `${freelancer.firstName || ''} ${freelancer.lastName || ''}`.trim() || 'Freelancer';
+  // Usamos safe navigation para evitar errores si profile es null
+  const fullName = `${freelancer.firstName || ''} ${freelancer.lastName || ''}`.trim() || freelancer.email;
 
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="max-w-6xl mx-auto space-y-8 p-4">
+        
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-md p-8 flex flex-col md:flex-row items-center gap-8 border-t-4 border-cyan-500">
+           <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg shrink-0 ring-2 ring-cyan-100">
+              {freelancer.profile?.avatarUrl ? (
+                <img 
+                  src={freelancer.profile.avatarUrl}
+                  alt={fullName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center text-4xl text-gray-400 font-bold">
+                  {fullName.charAt(0).toUpperCase()}
+                </div>
+              )}
+           </div>
+           <div className="text-center md:text-left flex-1">
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">{fullName}</h1>
+              <p className="text-cyan-600 font-medium mb-4">{freelancer.email}</p>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                <p className="text-gray-600 leading-relaxed italic">
+                  {freelancer.profile?.bio || "Este freelancer aún no ha agregado una biografía."}
+                </p>
+              </div>
+           </div>
+        </div>
+
         {/* Proyectos */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Proyectos Completados</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-3">Proyectos Destacados</h2>
           
           {projects.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-12 text-center">
-              <div className="text-6xl mb-4">📂</div>
+            <div className="bg-white rounded-lg shadow-sm p-12 text-center border border-gray-100">
+              <div className="text-6xl mb-4 opacity-50">📂</div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 No hay proyectos públicos
               </h3>
-              <p className="text-gray-600">
-                Los proyectos completados aparecerán aquí automáticamente
+              <p className="text-gray-500">
+                Este usuario aún no ha publicado proyectos en su portafolio.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {projects.map((project, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
-                  {project.imageUrl && (
-                    <img
-                      src={`${API_URL}/${project.imageUrl}`}
-                      alt={project.name}
-                      className="w-full h-48 object-cover"
-                    />
-                  )}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{project.name}</h3>
-                    <p className="text-gray-600 mb-4">{project.description}</p>
-                    
-                    {project.requirements.length > 0 && (
-                      <div className="mb-4">
-                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Requerimientos:</h4>
-                        <ul className="space-y-1">
-                          {project.requirements.slice(0, 3).map((req, idx) => (
-                            <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
-                              <span className="text-green-500 mt-1">✓</span>
-                              <span>{req.description}</span>
-                            </li>
-                          ))}
-                          {project.requirements.length > 3 && (
-                            <li className="text-sm text-gray-500 italic">
-                              +{project.requirements.length - 3} más...
-                            </li>
-                          )}
-                        </ul>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {projects.map((project) => (
+                <Link 
+                  key={project.id} 
+                  to={`/portfolio/project/${project.id}`}
+                  className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition duration-300 flex flex-col border border-gray-200 overflow-hidden h-full"
+                >
+                  <div className="h-48 overflow-hidden relative bg-gray-100">
+                    {project.imageUrl ? (
+                      <img 
+                        src={project.imageUrl} 
+                        alt={project.name} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                        <span className="text-sm mt-2">Sin imagen</span>
                       </div>
                     )}
-
-                    {project.tasks.length > 0 && (
-                      <div>
-                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Galería de Tareas:</h4>
-                        <div className="grid grid-cols-3 gap-2">
-                          {project.tasks.slice(0, 6).map((task, idx) => (
-                            <img
-                              key={idx}
-                              src={`${API_URL}/${task.imageUrl}`}
-                              alt={task.requirement.description}
-                              className="w-full h-20 object-cover rounded border border-gray-200 hover:scale-105 transition cursor-pointer"
-                              title={task.requirement.description}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                        project.status === 'COMPLETED' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-blue-100 text-blue-800'
-                      }`}>
-                        {project.status === 'COMPLETED' ? 'Completado' : project.status}
-                      </span>
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <span className="bg-white/90 text-gray-900 px-4 py-2 rounded-full text-sm font-bold shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-all">Ver Detalles</span>
                     </div>
                   </div>
-                </div>
+                  
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-cyan-600 transition-colors line-clamp-1">{project.name}</h3>
+                    <p className="text-gray-500 text-sm line-clamp-3 mb-4 flex-1">{project.description}</p>
+                    
+                    <div className="pt-4 mt-auto border-t border-gray-100 flex justify-between items-center text-xs text-gray-400 font-medium">
+                      <span>{new Date(project.createdAt).toLocaleDateString()}</span>
+                      <span className="text-cyan-500 group-hover:underline">Leer más →</span>
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
           )}

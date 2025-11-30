@@ -16,7 +16,6 @@ model User {
   password  String
   firstName String?
   lastName  String?
-
   role      Role     @default(FREELANCER)
 
   createdAt DateTime @default(now())
@@ -30,7 +29,7 @@ model User {
   projectsJoined ProjectClient[] @relation("JoinedProjects")
 
   status      ProjectStatus @default(PENDING)
-  
+
 
 }
 

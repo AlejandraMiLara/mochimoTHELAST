@@ -13,4 +13,9 @@ export class PortfolioController {
   getPortfolio(@Param('id') userId: string,) {
     return this.portfolioService.getPortfolio(userId);
   }
+
+  @Get('project/:projectId')
+  getPublicProject(@Param('projectId') projectId: string) {
+    return this.portfolioService.getPublicProject(projectId);
+  }
 }

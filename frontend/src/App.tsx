@@ -13,6 +13,7 @@ import Contracts from "./pages/contracts/Contracts";
 import Portfolio from "./pages/portfolio/Portfolio";
 import Payments from "./pages/payments/Payments";
 import PaymentReview from "./pages/payment-review/PaymentReview";
+import ProjectDetail from "./pages/portfolio/ProjectDetail";
 
 function App() {
   const { isLoading } = useAuth();
@@ -28,6 +29,9 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/" element={<Home />} />
+
+        <Route path="/portfolio/:userId" element={<Portfolio />} />
+        <Route path="/portfolio/project/:projectId" element={<ProjectDetail />} />
 
         {/* --- Rutas Privadas --- */}
         <Route
