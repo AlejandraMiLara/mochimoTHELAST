@@ -7,6 +7,8 @@ export default function ProjectDetail() {
   const { projectId } = useParams();
   const [project, setProject] = useState<PublicProjectDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const statusColors: Record<string, string> = {
     INPROGRESS: "badge-success",
@@ -38,6 +40,14 @@ export default function ProjectDetail() {
         .finally(() => setLoading(false));
     }
   }, [projectId]);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedImage(null);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
 
   if (loading) {
     return (
@@ -92,7 +102,7 @@ export default function ProjectDetail() {
           <div className="card-body p-8">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
               <div>
-                <h1 className="card-title text-3xl md:text-4xl mb-2 text-white">
+                <h1 className="card-title text-3xl md:text-4xl mb-2">
                   {project.name}
                 </h1>
                 <div className="flex items-center gap-3 text-sm text-base-content/70">
@@ -138,7 +148,7 @@ export default function ProjectDetail() {
           <div className="lg:col-span-2 space-y-6">
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h2 className="card-title mb-4 flex items-center gap-2 text-white">
+                <h2 className="card-title mb-4 flex items-center gap-2">
                   <span className="bg-primary/10 text-primary p-2 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                   </span>
@@ -148,13 +158,19 @@ export default function ProjectDetail() {
                 {project.tasks.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {project.tasks.map((task, idx) => (
-                      <div key={idx} className="card bg-base-200 hover:shadow-lg transition-all duration-300 border border-base-300 overflow-hidden">
-                        <figure className="aspect-video cursor-zoom-in">
+                      <div key={idx} className="card bg-base-200 hover:shadow-lg transition-all duration-300 border border-base-300 overflow-hidden group">
+                        <figure 
+                          className="aspect-video cursor-zoom-in relative" 
+                          onClick={() => setSelectedImage(task.imageUrl)}
+                        >
                           <img 
                             src={task.imageUrl} 
                             alt={`Evidencia ${idx + 1}`} 
-                            className="w-full h-full object-cover hover:scale-105 transition duration-500" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
                           />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-0 group-hover:opacity-100 transition-opacity"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>
+                          </div>
                         </figure>
                         <div className="p-3">
                           <p className="text-sm font-medium text-base-content/80 line-clamp-2">
@@ -176,7 +192,7 @@ export default function ProjectDetail() {
           <div className="space-y-6">
             <div className="card bg-base-100 shadow-xl sticky top-6">
               <div className="card-body">
-                <h2 className="card-title mb-4 flex items-center gap-2 text-white">
+                <h2 className="card-title mb-4 flex items-center gap-2">
                   <span className="bg-success/10 text-success p-2 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                   </span>
@@ -203,6 +219,28 @@ export default function ProjectDetail() {
 
         </div>
       </div>
+
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm animate-fade-in"
+          onClick={() => setSelectedImage(null)}
+        >
+          <button 
+            className="absolute top-4 right-4 btn btn-circle btn-ghost text-white hover:bg-white/20 z-50"
+            onClick={() => setSelectedImage(null)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 18 18"/></svg>
+          </button>
+
+          <img 
+            src={selectedImage} 
+            alt="Vista completa" 
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-scale-up"
+            onClick={(e) => e.stopPropagation()} // Evita que se cierre al dar click a la imagen
+          />
+        </div>
+      )}
+
     </DashboardLayout>
   );
 }
