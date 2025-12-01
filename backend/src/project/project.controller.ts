@@ -75,15 +75,29 @@ constructor(
     return this.projectService.checkProjectAccess(user.userId, id);
   }
 
-  @Patch(':id')
+@Patch(':id')
   @UseGuards(RolesGuard)
   @Roles(Role.FREELANCER)
-  update(
+  @UseInterceptors(FileInterceptor('file')) 
+  async update(
     @Param('id') id: string,
     @Body(ValidationPipe) updateProjectDto: UpdateProjectDto,
     @GetUser() user: JwtPayload,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.projectService.update(user.userId, id, updateProjectDto);
+    let imageUrl = updateProjectDto.imageUrl;
+
+    if (file) {
+      const uploadResult = await this.cloudinaryService.uploadImage(file);
+      imageUrl = uploadResult.secure_url;
+    }
+
+    const updateData = {
+      ...updateProjectDto,
+      ...(imageUrl && { imageUrl }),
+    };
+
+    return this.projectService.update(user.userId, id, updateData);
   }
 
   @Delete(':id')

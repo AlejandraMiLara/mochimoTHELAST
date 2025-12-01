@@ -95,27 +95,45 @@ export function useProjects(userId: string) {
     }
   };
 
-  const updateProject = async (id: string, formData: ProjectFormData) => {
+// 👇 MODIFICADO: Añadimos 'file' como argumento opcional
+  const updateProject = async (id: string, formData: ProjectFormData, file?: File) => {
     try {
-      const { name, description, imageUrl, paymentMode, isPublic } = formData;
+      const { name, description, imageUrl, paymentMode, isPublic, status } = formData;
+      
+      // 1. Crear FormData en lugar de objeto JSON
+      const formDataPayload = new FormData();
+      
+      // 2. Agregar campos de texto
+      formDataPayload.append("name", name);
+      formDataPayload.append("description", description);
+      
       const paymentModeMapped =
         paymentMode === "FULLADVANCE"
           ? "UPFRONT"
           : paymentMode === "FULLCOMPLETE"
           ? "ONFINISH"
           : paymentMode;
-          
-      const payload: any = { name, description, paymentMode: paymentModeMapped, isPublic };
       
-      if (imageUrl && imageUrl.trim() !== "") {
-        payload.imageUrl = imageUrl.trim();
+      formDataPayload.append("paymentMode", paymentModeMapped);
+      formDataPayload.append("isPublic", String(isPublic));
+      
+      // Solo enviamos status si es necesario (el backend puede ignorarlo si no quieres que se edite aquí)
+      formDataPayload.append("status", status); 
+
+      // 3. Manejar la imagen (Prioridad al archivo nuevo)
+      if (file) {
+        formDataPayload.append("file", file);
+      } else if (imageUrl && imageUrl.trim() !== "") {
+        // Si no hay archivo nuevo pero queremos mantener/enviar la URL existente
+        formDataPayload.append("imageUrl", imageUrl.trim());
       }
-      
+
+      // 4. Enviar usando PATCH pero sin header JSON
       const response = await fetch(`${API_URL}/projects/${id}`, {
         method: "PATCH",
-        headers: getAuthHeaders(),
+        // ⚠️ NO headers: getAuthHeaders(), <- IMPORTANTE: Quitar esto para que funcione multipart
         credentials: "include",
-        body: JSON.stringify(payload),
+        body: formDataPayload, // Enviamos el FormData
       });
 
       if (!response.ok) {
