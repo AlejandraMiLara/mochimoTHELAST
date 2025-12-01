@@ -36,7 +36,7 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.03)_0%,rgba(255,255,255,0)_50%,rgba(255,255,255,0.03)_100%)] mix-blend-overlay"></div>
 
       <div className="relative z-10 max-w-6xl mx-auto h-full">
-        {/* Header */}
+        
         <div className="text-center mb-8 pt-8">
           <h1 className="text-4xl font-bold text-cyan-400 mb-3">Mochimo</h1>
           <p className="text-xl text-gray-400">Bienvenido de vuelta</p>
