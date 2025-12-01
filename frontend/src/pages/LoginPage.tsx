@@ -30,8 +30,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-base-100 p-4 py-8">
-      <div className="max-w-6xl mx-auto h-full">
+    <div className="min-h-screen bg-slate-950 p-4 py-8 relative overflow-hidden">
+      <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-slate-950 to-cyan-900/20"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_20%,rgba(34,211,238,0.25),transparent_60%)]"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.03)_0%,rgba(255,255,255,0)_50%,rgba(255,255,255,0.03)_100%)] mix-blend-overlay"></div>
+
+      <div className="relative z-10 max-w-6xl mx-auto h-full">
         {/* Header */}
         <div className="text-center mb-8 pt-8">
           <h1 className="text-4xl font-bold text-cyan-400 mb-3">Mochimo</h1>

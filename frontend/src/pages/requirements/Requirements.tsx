@@ -129,15 +129,15 @@ export default function Requirements() {
     <DashboardLayout>
       <div className="mb-8 space-y-6">
         <header>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-white">
             Gestión de Requisitos
           </h1>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-slate-400 mt-2">
             Crea, envía y aprueba requisitos para mantener alineado el proyecto.
           </p>
         </header>
 
-        <div className="bg-base-200 border border-blue-200 text-white px-4 py-3 rounded">
+        <div className="bg-base-200  text-white px-4 py-3 rounded">
           <div className="flex items-start gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -198,7 +198,7 @@ export default function Requirements() {
         </div>
 
         {!selectedProjectId ? (
-          <div className="bg-base-200 rounded-lg shadow-md p-12 text-center border border-dashed border-gray-500">
+          <div className="bg-base-200 rounded-lg shadow-md p-12 text-center border-gray-500">
             <div className="flex flex-col items-center text-white">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

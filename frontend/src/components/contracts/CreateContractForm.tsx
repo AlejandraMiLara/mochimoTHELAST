@@ -21,7 +21,9 @@ export default function CreateContractForm({
   isEditing = false,
 }: CreateContractFormProps) {
   const [price, setPrice] = useState(initialData?.price?.toString() || "");
-  const [includesIva, setIncludesIva] = useState(initialData?.includesIva || false);
+  const [includesIva, setIncludesIva] = useState(
+    initialData?.includesIva || false
+  );
   const [content, setContent] = useState(initialData?.content || "");
   const [loading, setLoading] = useState(false);
 
@@ -43,7 +45,7 @@ export default function CreateContractForm({
   return (
     <div className="bg-base-200 rounded-lg shadow-md p-6 border border-gray-200">
       <h3 className="text-xl font-bold text-white mb-4">
-        {isEditing ? 'Editar Contrato' : 'Crear Nuevo Contrato'}
+        {isEditing ? "Editar Contrato" : "Crear Nuevo Contrato"}
       </h3>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -108,7 +110,13 @@ export default function CreateContractForm({
             disabled={loading || !price}
             className="flex-1 bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-500 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {loading ? (isEditing ? "Actualizando..." : "Creando...") : (isEditing ? "Actualizar Contrato" : "Crear Contrato")}
+            {loading
+              ? isEditing
+                ? "Actualizando..."
+                : "Creando..."
+              : isEditing
+              ? "Actualizar Contrato"
+              : "Crear Contrato"}
           </button>
           <button
             type="button"

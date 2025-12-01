@@ -31,7 +31,10 @@ function App() {
         <Route path="/" element={<Home />} />
 
         <Route path="/portfolio/:userId" element={<Portfolio />} />
-        <Route path="/portfolio/project/:projectId" element={<ProjectDetail />} />
+        <Route
+          path="/portfolio/project/:projectId"
+          element={<ProjectDetail />}
+        />
 
         {/* --- Rutas Privadas --- */}
         <Route
@@ -85,7 +88,7 @@ function App() {
             </ProtectedRoute>
           }
         ></Route>
-        
+
         <Route
           path="/contracts"
           element={
@@ -94,7 +97,7 @@ function App() {
             </ProtectedRoute>
           }
         ></Route>
-        
+
         <Route
           path="/portfolio"
           element={
@@ -103,7 +106,7 @@ function App() {
             </ProtectedRoute>
           }
         ></Route>
-        
+
         <Route
           path="/payments"
           element={
@@ -112,7 +115,7 @@ function App() {
             </ProtectedRoute>
           }
         ></Route>
-        
+
         <Route
           path="/payment-review"
           element={

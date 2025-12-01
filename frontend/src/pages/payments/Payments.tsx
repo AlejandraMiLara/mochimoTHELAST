@@ -25,10 +25,7 @@ export default function Payments() {
 
   const isClient = String(user?.role) === "CLIENT";
 
-  // Filtrar proyectos que están en estado PAYMENT
-  const availableProjects = projects.filter(
-    (p) => p.status === "PAYMENT"
-  );
+  const availableProjects = projects.filter((p) => p.status === "PAYMENT");
 
   useEffect(() => {
     if (selectedProjectId) {
@@ -93,15 +90,11 @@ export default function Payments() {
     setShowRevisionModal(true);
   };
 
-
-
-
-
   return (
     <DashboardLayout>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Pagos</h2>
-        <p className="text-gray-600 mt-1">
+        <h2 className="text-3xl font-bold text-white">Pagos</h2>
+        <p className="text-slate-400 mt-1">
           {isClient
             ? "Sube comprobantes de pago para tus proyectos"
             : "Revisa y aprueba los comprobantes de pago"}
@@ -150,10 +143,20 @@ export default function Payments() {
               onClick={() => setShowUploadForm(true)}
               className="bg-cyan-600 text-white px-6 py-3 rounded-lg hover:bg-cyan-500 transition font-medium flex items-center gap-2"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="17 8 12 3 7 8"/>
-                <line x1="12" y1="3" x2="12" y2="15"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
               </svg>
               Subir Comprobante de Pago
             </button>
@@ -166,8 +169,6 @@ export default function Payments() {
               loading={loading}
             />
           )}
-
-
 
           {loading && !showUploadForm ? (
             <div className="bg-white rounded-lg shadow p-12 text-center">

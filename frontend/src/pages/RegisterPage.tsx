@@ -19,6 +19,13 @@ export default function RegisterPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [passwordErrors, setPasswordErrors] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false,
+  });
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -26,18 +33,47 @@ export default function RegisterPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const target = e.target as HTMLInputElement | HTMLSelectElement;
-    const { name, type } = target;
-    const value =
-      type === "checkbox" ? (target as HTMLInputElement).checked : target.value;
+    const { name, type, value } = target;
+    const checked =
+      type === "checkbox" ? (target as HTMLInputElement).checked : undefined;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
+
+    // Validaciones en tiempo real para contraseña
+    if (name === "password") {
+      const errors = {
+        length: value.length >= 8,
+        uppercase: /[A-Z]/.test(value),
+        lowercase: /[a-z]/.test(value),
+        number: /[0-9]/.test(value),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(value),
+      };
+      setPasswordErrors(errors);
+    }
+
+    // Validación en tiempo real para confirmar contraseña
+    if (name === "confirmPassword" || name === "password") {
+      if (formData.password !== value && name === "confirmPassword") {
+        setError("Las contraseñas no coinciden");
+      } else if (error === "Las contraseñas no coinciden") {
+        setError("");
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Validación de contraseña
+    const isPasswordValid = Object.values(passwordErrors).every(Boolean);
+    if (!isPasswordValid) {
+      setError("La contraseña no cumple con todos los requisitos de seguridad");
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
       setError("Las contraseñas no coinciden");
@@ -45,7 +81,7 @@ export default function RegisterPage() {
     }
 
     if (!formData.terms) {
-      setError("Debes aceptar los terminos y condiciones");
+      setError("Debes aceptar los términos y condiciones");
       return;
     }
 
@@ -66,9 +102,15 @@ export default function RegisterPage() {
     }
   };
 
+  const isPasswordStrong = Object.values(passwordErrors).every(Boolean);
+
   return (
-    <div className=" min-h-screen bg-base-100 p-4 py-8">
-      <div className="max-w-6xl mx-auto h-full">
+    <div className="min-h-screen p-4 py-8 relative overflow-hidden bg-slate-950">
+      <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-slate-950 to-cyan-900/20"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_20%,rgba(34,211,238,0.25),transparent_60%)]"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.03)_0%,rgba(255,255,255,0)_50%,rgba(255,255,255,0.03)_100%)] mix-blend-overlay"></div>
+
+      <div className="relative z-10 max-w-6xl mx-auto h-full">
         {/* Header */}
         <div className="text-center mb-8 pt-8">
           <h1 className="text-4xl font-bold text-cyan-400 mb-3">Mochimo</h1>
@@ -109,7 +151,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div className="bg-base-100 backdrop-saturate-200 border border-zinc-950  rounded-2xl shadow-xl p-8 lg:p-10">
+          <div className="bg-base-100 backdrop-blur-xl border border-black rounded-2xl shadow-xl p-8 lg:p-10">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -145,7 +187,7 @@ export default function RegisterPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Correo Electronico
+                  Correo Electrónico
                 </label>
                 <input
                   type="email"
@@ -168,10 +210,81 @@ export default function RegisterPage() {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-white rounded-lg bg-gray-900/50 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border rounded-lg bg-gray-900/50 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent ${
+                      formData.password && !isPasswordStrong
+                        ? "border-yellow-500"
+                        : formData.password && isPasswordStrong
+                        ? "border-green-500"
+                        : "border-white"
+                    }`}
                     placeholder="••••••••"
                     required
+                    minLength={8}
                   />
+                  {formData.password && (
+                    <div className="mt-2 space-y-1">
+                      <div
+                        className={`flex items-center text-xs ${
+                          passwordErrors.length
+                            ? "text-green-400"
+                            : "text-yellow-400"
+                        }`}
+                      >
+                        <span className="mr-1">
+                          {passwordErrors.length ? "✓" : "●"}
+                        </span>
+                        Mínimo 8 caracteres ({formData.password.length}/8)
+                      </div>
+                      <div
+                        className={`flex items-center text-xs ${
+                          passwordErrors.uppercase
+                            ? "text-green-400"
+                            : "text-gray-400"
+                        }`}
+                      >
+                        <span className="mr-1">
+                          {passwordErrors.uppercase ? "✓" : "●"}
+                        </span>
+                        Al menos una mayúscula
+                      </div>
+                      <div
+                        className={`flex items-center text-xs ${
+                          passwordErrors.lowercase
+                            ? "text-green-400"
+                            : "text-gray-400"
+                        }`}
+                      >
+                        <span className="mr-1">
+                          {passwordErrors.lowercase ? "✓" : "●"}
+                        </span>
+                        Al menos una minúscula
+                      </div>
+                      <div
+                        className={`flex items-center text-xs ${
+                          passwordErrors.number
+                            ? "text-green-400"
+                            : "text-gray-400"
+                        }`}
+                      >
+                        <span className="mr-1">
+                          {passwordErrors.number ? "✓" : "●"}
+                        </span>
+                        Al menos un número
+                      </div>
+                      <div
+                        className={`flex items-center text-xs ${
+                          passwordErrors.special
+                            ? "text-green-400"
+                            : "text-gray-400"
+                        }`}
+                      >
+                        <span className="mr-1">
+                          {passwordErrors.special ? "✓" : "●"}
+                        </span>
+                        Al menos un carácter especial
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -183,10 +296,38 @@ export default function RegisterPage() {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-white rounded-lg bg-gray-900/50 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border rounded-lg bg-gray-900/50 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent ${
+                      formData.confirmPassword &&
+                      formData.password !== formData.confirmPassword
+                        ? "border-red-500"
+                        : formData.confirmPassword &&
+                          formData.password === formData.confirmPassword
+                        ? "border-green-500"
+                        : "border-white"
+                    }`}
                     placeholder="••••••••"
                     required
                   />
+                  {formData.confirmPassword && (
+                    <div className="mt-2">
+                      <div
+                        className={`flex items-center text-xs ${
+                          formData.password === formData.confirmPassword
+                            ? "text-green-400"
+                            : "text-red-400"
+                        }`}
+                      >
+                        <span className="mr-1">
+                          {formData.password === formData.confirmPassword
+                            ? "✓"
+                            : "●"}
+                        </span>
+                        {formData.password === formData.confirmPassword
+                          ? "Las contraseñas coinciden"
+                          : "Las contraseñas no coinciden"}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -205,7 +346,7 @@ export default function RegisterPage() {
                     value=""
                     className="text-white bg-gray-900/50"
                   >
-                    Selecciona una opcion
+                    Selecciona una opción
                   </option>
                   <option value={UserRole.FREELANCER}>Freelancer</option>
                   <option value={UserRole.CLIENT}>Cliente</option>
@@ -226,7 +367,7 @@ export default function RegisterPage() {
                     href="#"
                     className="text-cyan-400 font-medium hover:underline"
                   >
-                    terminos y condiciones
+                    términos y condiciones
                   </a>
                 </label>
               </div>
@@ -239,7 +380,12 @@ export default function RegisterPage() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={
+                  loading ||
+                  !isPasswordStrong ||
+                  formData.password !== formData.confirmPassword ||
+                  !formData.terms
+                }
                 className="w-full bg-linear-to-r from-cyan-500 to-blue-600 text-white font-semibold py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 transition text-lg"
               >
                 {loading ? "Registrando..." : "Crear Cuenta"}
@@ -252,7 +398,7 @@ export default function RegisterPage() {
                 href="/login"
                 className="text-cyan-400 font-medium hover:underline"
               >
-                Inicia sesion
+                Inicia sesión
               </a>
             </div>
           </div>

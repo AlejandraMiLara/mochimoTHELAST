@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useProjects } from "../hooks/projects/useProjects";
 import DashboardLayout from "../layouts/DashBoardLayout";
 import { useProfile } from "../hooks/Profile/useProfile";
-import FreelancerDashboard from "../components/dashboard/FreelancerDashboard";
-import ClientDashboard from "../components/dashboard/ClientDashboard";
+import { Dashboard } from "../components/dashboard/Dashboard";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -12,25 +11,20 @@ export default function DashboardPage() {
   const { projects, loading: projectsLoading } = useProjects(
     user?.userId || ""
   );
-  const { profile, loadingProfile } = useProfile();
+  const { profile } = useProfile();
 
   if (!user) return null;
 
-  const isFreelancer = String(user.role) === "FREELANCER";
-  const isClient = String(user.role) === "CLIENT";
-
-  const dashboardProps = {
-    user,
-    profile,
-    projects,
-    projectsLoading,
-    navigate,
-  };
-
   return (
     <DashboardLayout>
-      {isFreelancer && <FreelancerDashboard {...dashboardProps} />}
-      {isClient && <ClientDashboard {...dashboardProps} />}
+      <Dashboard
+        user={user}
+        profile={profile}
+        projects={projects}
+        projectsLoading={projectsLoading}
+        navigate={navigate}
+        role={user.role as "FREELANCER" | "CLIENT"}
+      />
     </DashboardLayout>
   );
 }

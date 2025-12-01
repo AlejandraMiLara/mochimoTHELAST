@@ -73,10 +73,10 @@ export default function ProjectCard({
 
   return (
     <div
-      className={`card ${cardBgColors[status]} shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-300`}
+      className={`card ${cardBgColors[status]} shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-300 backdrop-blur-sm`}
     >
       <div className="card-body">
-        <div className="justify-between">
+        <div className="flex justify-between items-start">
           <h2 className="card-title text-base-content">{name}</h2>
           <span className={`badge ${statusColors[status]} badge-sm`}>
             {statusText[status] ?? status}
@@ -119,29 +119,39 @@ export default function ProjectCard({
           </div>
         )}
 
-        <div className="card-actions justify-end mt-4 flex items-center gap-2">
-          {showActions && onEdit && (
-            <button
-              onClick={() =>
-                onEdit({
-                  id,
-                  name,
-                  description,
-                  imageUrl: undefined,
-                  paymentMode,
-                  status,
-                  invitationCode,
-                  createdAt: new Date().toISOString(),
-                  updatedAt: new Date().toISOString(),
-                  ownerId: "",
-                  isPublic: false,
-                })
-              }
-              className="btn btn-primary text-white btn-sm"
+        <div className="card-actions justify-between mt-4">
+          <div className="flex gap-2">
+            {showActions && onEdit && (
+              <button
+                onClick={() =>
+                  onEdit({
+                    id,
+                    name,
+                    description,
+                    imageUrl: undefined,
+                    paymentMode,
+                    status,
+                    invitationCode,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    ownerId: "",
+                    isPublic: false,
+                  })
+                }
+                className="btn btn-primary text-white btn-sm"
+              >
+                Editar
+              </button>
+            )}
+
+            <Link
+              to={`/requirements/${id}`}
+              className="btn btn-primary btn-sm text-white"
             >
-              Editar
-            </button>
-          )}
+              Requisitos
+            </Link>
+          </div>
+
           {showActions && onDelete && (
             <button
               onClick={() => onDelete(id)}
@@ -150,13 +160,6 @@ export default function ProjectCard({
               Eliminar
             </button>
           )}
-
-          <Link
-            to={`/requirements/${id}`}
-            className="btn btn-primary btn-sm text-white"
-          >
-            Requisitos
-          </Link>
         </div>
       </div>
     </div>

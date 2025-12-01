@@ -62,7 +62,7 @@ export default function Projects() {
         : project.paymentMode === "ONFINISH"
         ? "FULLCOMPLETE"
         : project.paymentMode;
-    
+
     setFormData({
       name: project.name,
       description: project.description,
@@ -96,10 +96,10 @@ export default function Projects() {
       <div>
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">
+            <h2 className="text-3xl font-bold text-white">
               {isFreelancer ? "Mis Proyectos" : "Proyectos Asignados"}
             </h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-slate-400 mt-1">
               {isFreelancer
                 ? "Gestiona todos tus proyectos en un solo lugar"
                 : "Proyectos en los que estás invitado"}
@@ -151,7 +151,7 @@ export default function Projects() {
         </div>
 
         {filteredProjects.length === 0 && (
-          <div className="bg-base-200 border-2 border-dashed border-black rounded-lg p-12 text-center">
+          <div className="bg-base-200  rounded-lg p-12 text-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="mx-auto h-16 w-16 text-blue-400 mb-4"
@@ -171,7 +171,7 @@ export default function Projects() {
                 ? "No tienes proyectos aún"
                 : "No tienes proyectos asignados"}
             </h3>
-            <p className="text-blue-700 mb-4">
+            <p className="text-white mb-4">
               {isFreelancer
                 ? "Crea tu primer proyecto para comenzar a trabajar"
                 : "Usa el codigo de invitacion arriba para unirte a un proyecto"}

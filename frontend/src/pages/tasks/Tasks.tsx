@@ -73,38 +73,25 @@ export default function Tasks() {
       <div>
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Gestión de Tareas
-            </h1>
+            <h1 className="text-3xl font-bold text-white">Tareas</h1>
           </div>
 
-          <div className="bg-base-200 border border-blue-200 text-white px-4 py-3 rounded mb-4">
-            <div className="flex items-start gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mt-0.5 shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <div>
-                <p className="font-semibold">
-                  Las tareas se generan automáticamente
-                </p>
-                <p className="text-sm">
-                  Cuando un requerimiento es aprobado, se crea automáticamente
-                  una tarea. Puedes actualizar el estado y subir evidencia de
-                  progreso.
-                </p>
-              </div>
-            </div>
+          <div className="flex items-center bg-slate-800 gap-2 px-2 py-1 rounded-md text-xs text-blue-200">
+            <svg
+              className="h-3 w-3 opacity-70"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            Las tareas se generan automáticamente cuando un requerimiento es
+            aprobado.
           </div>
 
           {projectsError && (
@@ -120,7 +107,6 @@ export default function Tasks() {
               </button>
             </div>
           )}
-
           {/* Selector de proyecto */}
           <div className="bg-base-200 rounded-lg shadow-md p-6 mb-6">
             <label className="block text-sm font-medium text-white mb-2">
@@ -149,7 +135,6 @@ export default function Tasks() {
               ))}
             </select>
           </div>
-
           {/* Filtros y estadisticas - solo si hay proyecto seleccionado */}
           {selectedProjectId && (
             <div className="bg-base-200 rounded-lg shadow-md p-6 mb-6">
@@ -215,7 +200,6 @@ export default function Tasks() {
             ) : (
               <>
                 <ul className="list bg-base-200 rounded-box shadow-md">
-                  {/* Header de la lista */}
                   <li className="p-4 pb-2 text-xs opacity-60 tracking-wide uppercase text-white">
                     {filterStatus === "ALL"
                       ? `Todas las tareas (${filteredTasks.length})`
@@ -237,7 +221,6 @@ export default function Tasks() {
                   ))}
                 </ul>
 
-                {/* Mensaje si no hay tareas */}
                 {filteredTasks.length === 0 && (
                   <div className="bg-base-200 border-2 border-dashed border-slate-300 rounded-lg p-12 text-center">
                     <svg
@@ -276,7 +259,7 @@ export default function Tasks() {
         )}
 
         {!selectedProjectId && (
-          <div className="bg-base-200 border-2 border-dashed border-slate-300 rounded-lg p-12 text-center">
+          <div className="bg-base-200 rounded-lg p-12 text-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="mx-auto h-16 w-16 text-slate-400 mb-4"

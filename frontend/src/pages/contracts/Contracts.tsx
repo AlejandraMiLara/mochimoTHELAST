@@ -137,20 +137,23 @@ export default function Contracts() {
   };
 
   const handleEditContract = () => {
-    console.log('Editando contrato:', contract);
-    console.log('Estado antes - isEditing:', isEditing, 'showCreateForm:', showCreateForm);
+    console.log("Editando contrato:", contract);
+    console.log(
+      "Estado antes - isEditing:",
+      isEditing,
+      "showCreateForm:",
+      showCreateForm
+    );
     setIsEditing(true);
     setShowCreateForm(true);
-    console.log('Estado después - isEditing: true, showCreateForm: true');
+    console.log("Estado después - isEditing: true, showCreateForm: true");
   };
-
-
 
   return (
     <DashboardLayout>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Contratos</h2>
-        <p className="text-gray-600 mt-1">
+        <h2 className="text-3xl font-bold text-white">Contratos</h2>
+        <p className="text-slate-400 mt-1">
           {isFreelancer
             ? "Gestiona tus contratos como freelancer"
             : "Gestiona tus contratos como cliente"}
@@ -256,25 +259,17 @@ export default function Contracts() {
                 setShowCreateForm(false);
                 setIsEditing(false);
               }}
-              initialData={isEditing && contract ? {
-                price: contract.price,
-                includesIva: contract.includesIva,
-                content: contract.content
-              } : undefined}
+              initialData={
+                isEditing && contract
+                  ? {
+                      price: contract.price,
+                      includesIva: contract.includesIva,
+                      content: contract.content,
+                    }
+                  : undefined
+              }
               isEditing={isEditing}
             />
-          )}
-
-          {!contract && !showCreateForm && (
-            <div className="bg-white rounded-lg shadow p-12 text-center">
-              <div className="text-6xl mb-4">⏳</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Esperando Contrato
-              </h3>
-              <p className="text-gray-600">
-                El freelancer aún no ha creado el contrato para este proyecto
-              </p>
-            </div>
           )}
         </div>
       )}

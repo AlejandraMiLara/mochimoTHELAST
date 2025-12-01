@@ -35,7 +35,7 @@ export default function ProjectFormModal({
     if (isOpen) {
       setPreviewUrl(formData.imageUrl || null);
       setSelectedFile(null);
-      
+
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -52,7 +52,7 @@ export default function ProjectFormModal({
         return;
       }
       setSelectedFile(file);
-      
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result as string);
@@ -62,7 +62,7 @@ export default function ProjectFormModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-base-200 rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-700">
         <h3 className="text-2xl font-bold text-white mb-6">
           {isEditing ? "Editar Proyecto" : "Nuevo Proyecto"}
@@ -98,33 +98,35 @@ export default function ProjectFormModal({
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Imagen de Portada (Opcional)
             </label>
-            
+
             <div className="flex items-center gap-4">
               {previewUrl ? (
                 <div className="relative group">
                   <div className="w-20 h-20 rounded-lg overflow-hidden border border-gray-600">
-                     <img 
-                       src={previewUrl} 
-                       alt="Preview" 
-                       className="w-full h-full object-cover"
-                     />
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <button
                     onClick={() => {
-                        setPreviewUrl(null);
-                        setSelectedFile(null);
-                        onChange({ imageUrl: "" });
-                        if (fileInputRef.current) fileInputRef.current.value = "";
+                      setPreviewUrl(null);
+                      setSelectedFile(null);
+                      onChange({ imageUrl: "" });
+                      if (fileInputRef.current) fileInputRef.current.value = "";
                     }}
                     className="absolute -top-2 -right-2 btn btn-circle btn-xs btn-error text-white scale-0 group-hover:scale-100 transition-transform"
-                  >✕</button>
+                  >
+                    ✕
+                  </button>
                 </div>
               ) : (
                 <div className="w-20 h-20 rounded-lg bg-base-300 flex items-center justify-center border border-dashed border-gray-600">
-                    <span className="text-xs text-gray-500">Sin foto</span>
+                  <span className="text-xs text-gray-500">Sin foto</span>
                 </div>
               )}
-              
+
               <div className="flex-1">
                 <input
                   type="file"
@@ -133,7 +135,9 @@ export default function ProjectFormModal({
                   onChange={handleFileChange}
                   className="file-input file-input-bordered file-input-info w-full bg-gray-900/50 text-gray-300"
                 />
-                <p className="text-xs text-gray-500 mt-1">Sube una imagen para la portada (Max 5MB)</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Sube una imagen para la portada (Max 5MB)
+                </p>
               </div>
             </div>
           </div>
@@ -186,7 +190,9 @@ export default function ProjectFormModal({
                 onChange={(e) => onChange({ isPublic: e.target.checked })}
                 className="checkbox checkbox-primary"
               />
-              <span className="label-text text-gray-300">Proyecto público (visible en portafolio)</span>
+              <span className="label-text text-gray-300">
+                Proyecto público (visible en portafolio)
+              </span>
             </label>
           </div>
         </div>

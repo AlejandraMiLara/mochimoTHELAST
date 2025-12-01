@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import DashboardLayout from "../../layouts/DashBoardLayout";
 import { useAuth } from "../../hooks/useAuth";
 import { usePayments } from "../../hooks/usePayments";
@@ -9,18 +9,21 @@ import RevisionModal from "../../components/payment-review/RevisionModal";
 
 export default function PaymentReview() {
   const { user } = useAuth();
-  const { projects, loading: projectsLoading } = useProjects(user?.id || '');
+  const { projects, loading: projectsLoading } = useProjects(user?.id || "");
   const { getProofsForProject, reviewProof, loading } = usePayments();
-  
-  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [proofs, setProofs] = useState<PaymentProof[]>([]);
-  const [selectedProofId, setSelectedProofId] = useState<string>('');
+  const [selectedProofId, setSelectedProofId] = useState<string>("");
   const [showRevisionModal, setShowRevisionModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const availableProjects = projects.filter(p => 
-    p.status === 'PAYMENT' || p.status === 'INPROGRESS' || p.status === 'COMPLETED'
+  const availableProjects = projects.filter(
+    (p) =>
+      p.status === "PAYMENT" ||
+      p.status === "INPROGRESS" ||
+      p.status === "COMPLETED"
   );
 
   useEffect(() => {
@@ -43,9 +46,9 @@ export default function PaymentReview() {
   const handleApproveProof = async (proofId: string) => {
     try {
       setError(null);
-      await reviewProof(proofId, { action: 'APPROVE' });
+      await reviewProof(proofId, { action: "APPROVE" });
       await loadProofs();
-      setSuccess('Comprobante aprobado exitosamente');
+      setSuccess("Comprobante aprobado exitosamente");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       setError(err.message);
@@ -55,10 +58,13 @@ export default function PaymentReview() {
   const handleRequestRevision = async (reason: string) => {
     try {
       setError(null);
-      await reviewProof(selectedProofId, { action: 'REQUEST_REVISION', reason });
+      await reviewProof(selectedProofId, {
+        action: "REQUEST_REVISION",
+        reason,
+      });
       await loadProofs();
       setShowRevisionModal(false);
-      setSuccess('Solicitud de revisión enviada');
+      setSuccess("Solicitud de revisión enviada");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       setError(err.message);
@@ -70,13 +76,13 @@ export default function PaymentReview() {
     setShowRevisionModal(true);
   };
 
-  const pendingProofs = proofs.filter(p => p.status === 'PENDING');
-  const reviewedProofs = proofs.filter(p => p.status !== 'PENDING');
+  const pendingProofs = proofs.filter((p) => p.status === "PENDING");
+  const reviewedProofs = proofs.filter((p) => p.status !== "PENDING");
 
   return (
     <DashboardLayout>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Revisión de Pagos</h2>
+        <h2 className="text-3xl font-bold text-white">Revisión de Pagos</h2>
         <p className="text-gray-600 mt-1">
           Revisa y aprueba los comprobantes de pago de tus clientes
         </p>
@@ -94,8 +100,8 @@ export default function PaymentReview() {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+      <div className="bg-base-200 rounded-lg shadow p-12 text-center">
+        <label className="block text-sm font-medium text-white mb-2">
           Selecciona un Proyecto
         </label>
         <select
@@ -104,11 +110,11 @@ export default function PaymentReview() {
             setSelectedProjectId(e.target.value);
             setProofs([]);
           }}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full bg-base-200 text-white px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500"
           disabled={projectsLoading}
         >
-          <option value="">-- Selecciona un proyecto --</option>
-          {availableProjects.map(project => (
+          <option value=""> Selecciona un proyecto</option>
+          {availableProjects.map((project) => (
             <option key={project.id} value={project.id}>
               {project.name} - {project.status}
             </option>
@@ -128,12 +134,14 @@ export default function PaymentReview() {
               {pendingProofs.length > 0 && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-semibold text-gray-900">Comprobantes Pendientes</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Comprobantes Pendientes
+                    </h3>
                     <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
                       {pendingProofs.length}
                     </span>
                   </div>
-                  {pendingProofs.map(proof => (
+                  {pendingProofs.map((proof) => (
                     <ProofReviewCard
                       key={proof.id}
                       proof={proof}
@@ -146,24 +154,24 @@ export default function PaymentReview() {
 
               {reviewedProofs.length > 0 && (
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Historial de Comprobantes</h3>
-                  {reviewedProofs.map(proof => (
-                    <ProofReviewCard
-                      key={proof.id}
-                      proof={proof}
-                    />
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Historial de Comprobantes
+                  </h3>
+                  {reviewedProofs.map((proof) => (
+                    <ProofReviewCard key={proof.id} proof={proof} />
                   ))}
                 </div>
               )}
 
               {proofs.length === 0 && (
-                <div className="bg-white rounded-lg shadow p-12 text-center">
+                <div className="bg-base-200 rounded-lg shadow p-12 text-center">
                   <div className="text-6xl mb-4">📄</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  <h3 className="text-xl font-semibold text-white mb-2">
                     No hay comprobantes
                   </h3>
-                  <p className="text-gray-600">
-                    El cliente aún no ha subido comprobantes de pago para este proyecto
+                  <p className="text-slate-600">
+                    El cliente aún no ha subido comprobantes de pago para este
+                    proyecto
                   </p>
                 </div>
               )}
@@ -173,12 +181,27 @@ export default function PaymentReview() {
       )}
 
       {!selectedProjectId && (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <div className="bg-base-200 rounded-lg shadow p-12 text-center">
+          <div className="text-6xl mb-4 flex justify-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="50"
+              height="50"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              className="lucide lucide-folder-icon lucide-folder"
+            >
+              <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-white mb-2">
             Selecciona un Proyecto
           </h3>
-          <p className="text-gray-600">
+          <p className="text-slate-600">
             Elige un proyecto de la lista para revisar sus comprobantes de pago
           </p>
         </div>

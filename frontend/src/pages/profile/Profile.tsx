@@ -16,7 +16,7 @@ export default function Profile() {
     error,
     saveProfile,
     savePaymentData,
-    uploadAvatar, 
+    uploadAvatar,
     uploadingAvatar,
   } = useProfile();
 
@@ -93,11 +93,11 @@ export default function Profile() {
     try {
       const payload: { bio?: string | null } = {};
       const bioTrimmed = profileForm.bio?.trim();
-      
+
       if (bioTrimmed !== undefined) {
         payload.bio = bioTrimmed;
       }
-      
+
       await saveProfile(payload);
       setProfileMessage("Información actualizada correctamente");
     } catch {}
@@ -116,22 +116,33 @@ export default function Profile() {
     <DashboardLayout>
       <div className="space-y-8">
         <header>
-          <h1 className="text-3xl font-bold text-gray-900">Mi Perfil</h1>
-          <p className="text-sm text-gray-500 mt-2">
+          <h1 className="text-3xl font-bold text-white">Mi Perfil</h1>
+          <p className="text-sm text-slate-400 mt-2">
             Gestiona tu información personal y tus datos de pago.
           </p>
         </header>
 
         {error && (
           <div className="alert alert-error bg-red-900/50 border-red-500 text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
             <span>{error}</span>
           </div>
         )}
 
         <section className="bg-base-200 rounded-lg shadow p-6 border border-gray-700">
           <div className="flex items-center gap-6 mb-8">
-            
             <div className="relative group">
               <div className="w-24 h-24 rounded-full bg-base-300 flex items-center justify-center overflow-hidden border-4 border-base-100 shadow-xl relative">
                 {uploadingAvatar ? (
@@ -139,12 +150,14 @@ export default function Profile() {
                     <span className="loading loading-spinner text-cyan-400"></span>
                   </div>
                 ) : null}
-                
+
                 {profile.avatarUrl ? (
                   <img
                     src={profile.avatarUrl}
                     alt="Avatar"
-                    className={`w-full h-full object-cover transition-opacity ${uploadingAvatar ? 'opacity-50' : 'opacity-100'}`}
+                    className={`w-full h-full object-cover transition-opacity ${
+                      uploadingAvatar ? "opacity-50" : "opacity-100"
+                    }`}
                   />
                 ) : (
                   <span className="text-4xl text-white font-bold">
@@ -160,9 +173,19 @@ export default function Profile() {
                 className="absolute bottom-0 right-0 bg-cyan-500 p-2 rounded-full text-white hover:bg-cyan-400 transition-all shadow-lg hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
                 title="Cambiar foto de perfil"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                  <circle cx="12" cy="13" r="4"/>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                  <circle cx="12" cy="13" r="4" />
                 </svg>
               </button>
 
@@ -201,7 +224,7 @@ export default function Profile() {
                 }
                 disabled={loadingProfile}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-slate-300 mt-1">
                 Esta información será visible en tu perfil público.
               </p>
             </div>
@@ -233,16 +256,28 @@ export default function Profile() {
         {isFreelancer && (
           <section className="bg-base-200 rounded-lg shadow p-6 border border-gray-700">
             <div className="flex items-center gap-2 mb-6 border-b border-gray-700 pb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-cyan-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-cyan-400"
+              >
                 <rect width="20" height="14" x="2" y="5" rx="2" />
                 <line x1="2" x2="22" y1="10" y2="10" />
               </svg>
-              <h2 className="text-xl font-bold text-white">
-                Datos Bancarios
-              </h2>
+              <h2 className="text-xl font-bold text-white">Datos Bancarios</h2>
             </div>
-            
-            <form onSubmit={submitPayment} className="grid gap-6 md:grid-cols-2">
+
+            <form
+              onSubmit={submitPayment}
+              className="grid gap-6 md:grid-cols-2"
+            >
               <div className="col-span-2 md:col-span-1">
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Banco
@@ -258,7 +293,7 @@ export default function Profile() {
                   disabled={loadingPayment}
                 />
               </div>
-              
+
               <div className="col-span-2 md:col-span-1">
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Titular de la cuenta
@@ -277,7 +312,7 @@ export default function Profile() {
                   disabled={loadingPayment}
                 />
               </div>
-              
+
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Número de cuenta / CLABE
@@ -295,8 +330,9 @@ export default function Profile() {
                   }
                   disabled={loadingPayment}
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Estos datos se compartirán con tus clientes para recibir pagos.
+                <p className="text-xs text-slate-300 mt-1">
+                  Estos datos se compartirán con tus clientes para recibir
+                  pagos.
                 </p>
               </div>
 

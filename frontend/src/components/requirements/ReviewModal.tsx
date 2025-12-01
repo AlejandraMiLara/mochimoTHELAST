@@ -88,13 +88,13 @@ export default function ReviewModal({
           {reviewAction === "REVISION" && (
             <div className="mt-4">
               <label className="label">
-                <span className="label-text font-medium">
+                <span className="label-text font-medium text-white">
                   Motivo de la revisión
                 </span>
               </label>
               <textarea
                 placeholder="Explica qué necesita ser revisado..."
-                className="textarea textarea-bordered w-full h-24"
+                className="textarea textarea-bordered w-full h-24 text-slate-500"
                 value={revisionReason}
                 onChange={(e) => setRevisionReason(e.target.value)}
               />
