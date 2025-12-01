@@ -111,7 +111,7 @@ export default function ProjectDetail() {
                     {new Date(project.createdAt).toLocaleDateString()}
                   </span>
                   <span>•</span>
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1 text-white">
                     {project.owner.profile?.avatarUrl ? (
                       <div className="avatar">
                         <div className="w-5 h-5 rounded-full">
@@ -148,7 +148,7 @@ export default function ProjectDetail() {
           <div className="lg:col-span-2 space-y-6">
             <div className="card bg-base-100 shadow-xl">
               <div className="card-body">
-                <h2 className="card-title mb-4 flex items-center gap-2">
+                <h2 className="card-title mb-4 flex items-center gap-2 text-white">
                   <span className="bg-primary/10 text-primary p-2 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                   </span>
@@ -192,7 +192,7 @@ export default function ProjectDetail() {
           <div className="space-y-6">
             <div className="card bg-base-100 shadow-xl sticky top-6">
               <div className="card-body">
-                <h2 className="card-title mb-4 flex items-center gap-2">
+                <h2 className="card-title mb-4 flex items-center gap-2 text-white">
                   <span className="bg-success/10 text-success p-2 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                   </span>
