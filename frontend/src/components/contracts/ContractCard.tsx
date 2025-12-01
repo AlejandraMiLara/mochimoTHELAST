@@ -34,7 +34,6 @@ export default function ContractCard({
   return (
     <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-300 backdrop-blur-sm">
       <div className="card-body">
-        {/* HEADER */}
         <div className="flex justify-between items-start mb-2">
           <div>
             <h2 className="card-title text-base-content">

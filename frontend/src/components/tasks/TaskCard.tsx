@@ -65,7 +65,6 @@ export default function TaskCard({
     <>
       <div className="card bg-base-300 border border-slate-700 hover:border-slate-600 transition-all duration-300 hover:shadow-lg">
         <div className="card-body p-4 sm:p-6">
-          ¿
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
             <div className="flex items-center justify-between sm:justify-start gap-4">
               <span

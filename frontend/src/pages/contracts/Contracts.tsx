@@ -36,7 +36,6 @@ export default function Contracts() {
 
   const isFreelancer = String(user?.role) === "FREELANCER";
 
-  // Filtrar proyectos según el rol
   const availableProjects = projects.filter((p) => {
     if (isFreelancer) {
       return (

@@ -68,7 +68,6 @@ export default function Home() {
         />
       </div>
 
-      {/* Contenido principal con z-index apropiado */}
       <div className="relative z-10">
         <nav className="navbar bg-base-100/50 backdrop-blur-sm shadow-md sticky top-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -328,7 +327,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Footer */}
         <footer className="bg-base-200/50 backdrop-blur-sm text-neutral-content mt-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
