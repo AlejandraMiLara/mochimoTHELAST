@@ -79,7 +79,7 @@ export default function InvitationSection({
               onChange={(e) => setInvitationCode(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleJoinProject()}
               placeholder="Ingresa el código de invitación"
-              className="input input-bordered flex-1 bg-white"
+              className="input input-bordered flex-1 bg-white text-black"
             />
             <button
               onClick={handleJoinProject}

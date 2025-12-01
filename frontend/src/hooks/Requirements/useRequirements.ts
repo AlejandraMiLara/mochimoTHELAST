@@ -147,9 +147,9 @@ export function useRequirements(
       if (!projectId) return;
       const trimmed = description.trim();
       if (!trimmed) return;
-      await runAction(() =>
-        requirementService.createRequirement(projectId, trimmed)
-      );
+      await runAction(async () => {
+        await requirementService.createRequirement(projectId, trimmed);
+      });
     },
     [projectId, runAction]
   );
@@ -158,21 +158,27 @@ export function useRequirements(
     async (id: string, description: string) => {
       const trimmed = description.trim();
       if (!trimmed) return;
-      await runAction(() => requirementService.updateRequirement(id, trimmed));
+      await runAction(async () => {
+        await requirementService.updateRequirement(id, trimmed);
+      });
     },
     [runAction]
   );
 
   const deleteRequirement = useCallback(
     async (id: string) => {
-      await runAction(() => requirementService.deleteRequirement(id));
+      await runAction(async () => {
+        await requirementService.deleteRequirement(id);
+      });
     },
     [runAction]
   );
 
   const submitForReview = useCallback(async () => {
     if (!projectId) return;
-    await runAction(() => requirementService.submitForReview(projectId));
+    await runAction(async () => {
+      await requirementService.submitForReview(projectId);
+    });
   }, [projectId, runAction]);
 
   const reviewRequirements = useCallback(
@@ -180,9 +186,13 @@ export function useRequirements(
       if (!projectId) return;
       const backendAction =
         action === "REVISION" ? "REQUEST_REVISION" : "APPROVE";
-      await runAction(() =>
-        requirementService.reviewRequirements(projectId, backendAction, reason)
-      );
+      await runAction(async () => {
+        await requirementService.reviewRequirements(
+          projectId,
+          backendAction,
+          reason
+        );
+      });
     },
     [projectId, runAction]
   );
