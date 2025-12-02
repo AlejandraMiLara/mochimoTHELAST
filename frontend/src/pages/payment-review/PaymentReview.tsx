@@ -133,14 +133,9 @@ export default function PaymentReview() {
             <>
               {pendingProofs.length > 0 && (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Comprobantes Pendientes
-                    </h3>
-                    <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {pendingProofs.length}
-                    </span>
-                  </div>
+                  <h3 className="text-lg font-semibold text-white">
+                    Comprobantes Pendientes
+                  </h3>
                   {pendingProofs.map((proof) => (
                     <ProofReviewCard
                       key={proof.id}
@@ -154,7 +149,7 @@ export default function PaymentReview() {
 
               {reviewedProofs.length > 0 && (
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-white">
                     Historial de Comprobantes
                   </h3>
                   {reviewedProofs.map((proof) => (

@@ -25,45 +25,45 @@ export default function RevisionModal({ isOpen, onClose, onSubmit }: RevisionMod
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Solicitar Revisión del Comprobante</h3>
+    <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-base-200 rounded-lg shadow-xl max-w-md w-full p-6 border border-gray-700">
+        <h3 className="text-2xl font-bold text-white mb-6">Solicitar Revisión del Comprobante</h3>
         
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Razón de la revisión
             </label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
-              rows={5}
+              className="textarea textarea-bordered w-full bg-gray-900/50 text-white h-32 focus:ring-2 focus:ring-cyan-500"
               placeholder="Ejemplo: La cantidad no coincide con el contrato, la imagen está borrosa, falta información..."
               required
+              autoFocus
             />
           </div>
 
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-            <p className="text-sm text-yellow-800">
+          <div className="bg-yellow-900/30 border border-yellow-700 rounded-lg p-3 mb-4">
+            <p className="text-sm text-yellow-300">
               <strong>Nota:</strong> El cliente recibirá esta razón y deberá subir un nuevo comprobante.
             </p>
           </div>
 
           <div className="flex gap-3">
             <button
-              type="submit"
-              disabled={loading || !reason.trim()}
-              className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Enviando...' : 'Enviar Solicitud'}
-            </button>
-            <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition font-medium"
+              className="flex-1 btn btn-ghost border-gray-600 text-gray-300 hover:bg-gray-700"
             >
               Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={loading || !reason.trim()}
+              className="flex-1 btn btn-error bg-red-600 border-none hover:bg-red-700 text-white disabled:bg-gray-600 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Enviando...' : 'Enviar Solicitud'}
             </button>
           </div>
         </form>
